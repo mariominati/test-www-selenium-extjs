@@ -21,7 +21,7 @@ has 'parent' => (
 # extjs - central extjs testing object
 has 'extjs' => (
     isa         => 'Test::WWW::Selenium::ExtJS', 
-    is          => 'ro', 
+    is          => 'rw', 
     predicate   => 'has_extjs',
 );
 
@@ -47,7 +47,7 @@ sub BUILD {
 
     # Get the extjs object from the parent if given
     if ($self->has_parent && not $self->has_extjs) {
-        $self->extjs = $self->parent->extjs;
+        $self->extjs( $self->parent->extjs );
     }
 
     # Build a expression from a given id
@@ -57,9 +57,9 @@ sub BUILD {
     }
 
     # Check required parameters
-    die "Missing parameter" 
-        unless $self->has_extjs && $self->has_expression;
-}
+#     die "Missing parameter" 
+#         unless $self->has_extjs && $self->has_expression;
+};
 
 
 # Returns the ID of the Ext component, found with the proxy's JS expression. 
