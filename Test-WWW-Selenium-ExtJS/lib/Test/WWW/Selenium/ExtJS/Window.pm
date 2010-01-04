@@ -2,7 +2,7 @@ package Test::WWW::Selenium::ExtJS::Window;
 
 use Moose;                                       # Includes strict and warnings
 
-extends "Test::WWW::Selenium::ExtJS::Component";
+extends "Test::WWW::Selenium::ExtJS::Panel";
 
 use Readonly;
 Readonly my $TRUE       => 1;
