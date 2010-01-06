@@ -32,12 +32,24 @@ has 'expression' => (
     predicate   => 'has_expression',
 );
 
-
 # id - id of the Ext component
 has 'id' => (
     isa         => 'Str', 
     is          => 'ro', 
     predicate   => 'has_id',
+);
+
+# xtype - The XType of the Ext component
+has 'xtype' => (
+    isa         => 'Str', 
+    is          => 'ro', 
+    default     => 'component',
+);
+
+has '_rendered' => (
+    isa         => 'Bool',
+    is          => 'rw', 
+    default     => $FALSE,
 );
 
 
@@ -69,7 +81,7 @@ sub BUILD {
 sub get_id {
     my $self = shift;
 
-    return $self->get_eval( $self->get_expression() . $ID_FUNCTION );
+    return $self->extjs->get_eval( $self->get_expression() . $ID_FUNCTION );
 }
 
 
@@ -166,6 +178,27 @@ warn $result;
 #     protected boolean getEvalBooleanProperty(String name) { ... }
 #     protected int getEvalIntegerProperty(String name) { ... }
 #     protected double getEvalDoubleProperty(String name) { ... }
+
+
+# Checks if the component has already been rendered
+
+sub wait_for_rendered {
+    my $self = shift;
+
+    # Shortcut if check has been done
+    return $self
+        if $self->_rendered;
+
+    # Wait until component has been rendered
+    $self->wait_eval_on_component_true( ".rendered;" );
+
+    # Store success
+    $self->_rendered( $TRUE );
+
+    # Return $self for chaining
+    return $self;
+}
+
 
 
 1; # Magic true value required at end of module
