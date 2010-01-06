@@ -9,6 +9,12 @@ Readonly my $TRUE       => 1;
 Readonly my $FALSE      => 0;
 
 
+# xtype - set the default xtype of this Ext component
+has '+xtype' => (
+    default => 'box',
+);
+
+
 # Add specific methods here
 
 
