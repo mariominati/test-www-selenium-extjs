@@ -97,13 +97,15 @@ sub get_eval {
     my $anonymous_function =
         "(function (){ " . 
         $self->_js_preserve_window_objects_string .
-        $expression .
+        "return " . $expression .
         "}).call( window );";
 
 #     return $self->selenium->get_eval( $expression );
-    return $self->selenium->get_eval( $anonymous_function );
-}
 
+    my $result = $self->selenium->get_eval( $anonymous_function );
+warn "evaluating anonymous_function: ".$anonymous_function . "returns: ". $result;
+    return $result;
+}
 
 ###
 ###   Methods to synchronise with AJAX
@@ -125,9 +127,11 @@ sub wait_eval_true {
 
         # Run expression and check result
         my $result = $self->get_eval( $expression );
+warn "result: ".$result ;
         return if $result eq 'true';
 
-        sleep ($self->looptime);                       # Wait before next check
+        # Wait before next check
+        select(undef, undef, undef, ($self->looptime / 1000));
     }
 
     die "Timed out waiting for JS code: '$expression'";
@@ -153,7 +157,8 @@ sub wait_until_expression_resolves {
 warn $result;
         return $TRUE if $result;
 
-        sleep ($self->looptime);                       # Wait before next check
+        # Wait before next check
+        select(undef, undef, undef, ($self->looptime / 1000));
     }
 
     return $FALSE;
@@ -177,7 +182,8 @@ sub wait_until_expression_not_resolves {
 warn $result;
         return if not $result;
 
-        sleep ($self->looptime);                       # Wait before next check
+        # Wait before next check
+        select(undef, undef, undef, ($self->looptime / 1000));
     }
 
     die "Timed out waiting for JS code: '$expression'";
