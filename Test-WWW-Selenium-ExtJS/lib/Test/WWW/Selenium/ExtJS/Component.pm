@@ -173,6 +173,18 @@ sub get_eval_component_property_exists {
 warn $result;
 }
 
+
+sub get_eval_component_boolean_property {
+    my $self = shift;
+    my ($property) = @_;
+
+    my $result = $self->get_eval_component_string_property( $property );
+warn "get_eval_component_boolean_property: " . $result;
+
+    return ( $result eq "true" ? $TRUE : $FALSE );
+}
+
+
 #     protected String getEvalStringProperty(String name) { ... }
 #     protected boolean getEvalPropertyExists(String name) { ... }
 #     protected boolean getEvalBooleanProperty(String name) { ... }
@@ -181,7 +193,6 @@ warn $result;
 
 
 # Checks if the component has already been rendered
-
 sub wait_for_rendered {
     my $self = shift;
 
@@ -199,6 +210,13 @@ sub wait_for_rendered {
     return $self;
 }
 
+
+# Returns the enabled state of the component
+sub is_enabled {
+    my $self = shift;
+
+    return ( ! $self->get_eval_component_boolean_property( "disabled" ));
+}
 
 
 1; # Magic true value required at end of module
