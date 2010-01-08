@@ -68,7 +68,7 @@ sub type {
     my ($text) = @_;
 
     my $id = $self->get_id;
-warn $id;
+
     $self->extjs->selenium->type( $self->get_id, $text );
 
     return $self;
