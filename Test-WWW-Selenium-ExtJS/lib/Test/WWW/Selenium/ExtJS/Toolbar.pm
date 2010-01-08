@@ -1,6 +1,4 @@
-package Test::WWW::Selenium::ExtJS::Panel;
-
-use Test::WWW::Selenium::ExtJS::Panel::FooterToolbar;
+package Test::WWW::Selenium::ExtJS::Toolbar;
 
 use Moose;                                       # Includes strict and warnings
 
@@ -13,18 +11,21 @@ Readonly my $FALSE      => 0;
 
 # xtype - set the default xtype of this Ext component
 has '+xtype' => (
-    default => 'panel',
+    default => 'toolbar',
 );
 
 
-# Gets the toolbar object or the footer toolbar
-sub get_footer_toolbar {
-    my $self = shift;
+# Build component from given parameters
+sub BUILD {
+    my ( $self, $params ) = @_;
 
-    my $toolbar = new Test::WWW::Selenium::ExtJS::Panel::FooterToolbar( parent => $self );
-
-    return $toolbar;
+    # This is just a base class, so we don't set an expression
+    # Using this component directly means setting the expression string 
+    # your self.
 }
+
+
+# Add specific methods here
 
 
 1;  # Magic true value required at end of module
