@@ -15,7 +15,7 @@ sub BUILD {
 
     # Set expression to find the footer toobar of a panel
     $self->expression(
-        ".bbar"
+        ".getBottomToolbar()"
     );
 }
 
