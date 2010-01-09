@@ -103,7 +103,7 @@ sub get_eval {
 #     return $self->selenium->get_eval( $expression );
 
     my $result = $self->selenium->get_eval( $anonymous_function );
-warn "evaluating anonymous_function: ".$anonymous_function . "returns: ". $result;
+# warn "evaluating anonymous_function: ".$anonymous_function . "returns: ". $result;
     return $result;
 }
 
@@ -127,7 +127,6 @@ sub wait_eval_true {
 
         # Run expression and check result
         my $result = $self->get_eval( $expression );
-warn "result: ".$result ;
         return if $result eq 'true';
 
         # Wait before next check
