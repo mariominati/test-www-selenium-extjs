@@ -69,7 +69,7 @@ sub type {
 
     my $id = $self->get_id;
 
-    $self->extjs->selenium->type( $self->get_id, $text );
+    $self->extjs->selenium->type_ok( $self->get_id, $text );
 
     return $self;
 }
