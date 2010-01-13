@@ -28,11 +28,17 @@ has 'js_preserve_window_objects' => (
     default     => sub { [] },
 );
 
-# has 'resize_window' => (
-#     isa         => 'ArrayRef[Int]', 
-#     is          => 'ro', 
-#     predicate   => 'has_resize_window',
-# );
+has 'resize_window' => (
+    isa         => 'ArrayRef[Int]', 
+    is          => 'ro', 
+    predicate   => 'has_resize_window',
+);
+
+has 'maximize_window' => (
+    isa         => 'Bool', 
+    is          => 'ro', 
+    default     => $FALSE,
+);
 
 has 'timeout' => (
     isa         => 'Int', 
@@ -60,15 +66,19 @@ has '_js_preserve_window_objects_string' => (
 sub BUILD {
     my $self = shift;
 
-# Disabled as it doesn't work at all - mm 03.01.2010
-#     # Set window dimensions if given
-#     if ($self->has_resize_window) {
-#         $self->selenium->get_eval( 
-#             "window.moveTo(0,0); window.resizeTo(" . 
-#             join (',', @{$self->resize_window}) . 
-#             "); selenium.windowMaximize();" 
-#         );
-#     }
+    # Set window dimensions if given
+    if ($self->has_resize_window) {
+        $self->selenium->get_eval( 
+            "window.moveTo(1,1); window.resizeTo(" . 
+            join (',', @{$self->resize_window}) . 
+            ");" 
+        );
+    }
+
+    # maximize window
+    elsif ( $self->maximize_window ) {
+        $self->selenium->window_maximize;
+    }
 }
 
 
@@ -98,7 +108,7 @@ sub get_eval {
         "(function (){ " . 
         $self->_js_preserve_window_objects_string .
         "return " . $expression .
-        "}).call( window );";
+        "}).call( this.page().currentWindow );";
 
 #     return $self->selenium->get_eval( $expression );
 
@@ -152,9 +162,8 @@ sub wait_until_expression_resolves {
 
         # Run expression and check result
         my $result = $self->get_eval( $expression );
-# TODO - check if the expression resolves or if it failed
-warn $result;
-        return $TRUE if $result;
+# warn 'wait_until_expression_resolves - expression / result: ' . $expression . "/" . $result;
+        return $TRUE if not ($result eq 'null');
 
         # Wait before next check
         select(undef, undef, undef, ($self->looptime / 1000));
