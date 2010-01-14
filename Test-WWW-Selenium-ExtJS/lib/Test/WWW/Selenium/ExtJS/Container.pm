@@ -10,8 +10,15 @@ Readonly my $FALSE  => 0;
 
 # map layout names to proxy class names
 Readonly my $LAYOUT_PROXIES => {
-    border  =>  'BorderLayout',
     card    =>  'CardLayout',
+    anchor  =>  'AnchorLayout',
+    border  =>  'BorderLayout',
+    box     =>  'BoxLayout', 
+    column  =>  'ColumnLayout', 
+    fit     =>  'FitLayout', 
+    menu    =>  'MenuLayout', 
+    table   =>  'TableLayout', 
+    toolbar =>  'ToolbarLayout',
 };
 
 
@@ -28,12 +35,27 @@ has 'layout' => (
 
 # get items object where region == north 
 
-# Add specific methods here
-sub get_layout {
+# returns the name of the layout
+sub get_layoutname {
     my $self = shift;
 
     # get the predefined layout name
     my $layout = $self->layout;
+
+    # autodetect layout if not given
+    $layout = $self->_autodetect_layout
+        if not (defined $layout && length $layout);
+
+    return $layout;
+}
+
+
+# returns the layout proxy object
+sub get_layout {
+    my $self = shift;
+
+    # get the layout name
+    my $layout = $self->get_layoutname();
 
     # autodetect layout if not given
     $layout = $self->_autodetect_layout
@@ -59,8 +81,28 @@ sub get_layout {
 sub _autodetect_layout {
     my $self = shift;
 
+    # wait until container is ready
     $self->wait_for_component->wait_for_rendered;
-    my $res = $self->get_eval_component_string_property( 'layout' );
+
+    # get expression to access this container
+    my $objectExpression = $self->get_expression;
+
+    # build javascript code to find out the type of layout from known layouts
+    my $layoutExpression =
+        "(function (){" .
+            $self->extjs->_js_preserve_window_objects_string .
+            "var layout = $objectExpression.getLayout();";
+    foreach my $key (keys %$LAYOUT_PROXIES) {
+        $layoutExpression .= "
+            if (layout instanceof Ext.layout." . $LAYOUT_PROXIES->{ $key } . ") { return '" . $key . "'; }";
+    }
+    $layoutExpression .= "
+            return 'auto'; 
+        }).call( this.page().currentWindow );";
+
+    # get name of layout
+    my $result = $self->extjs->selenium->get_eval( $layoutExpression );
+    return $result;
 }
 
 
