@@ -52,6 +52,12 @@ has '_rendered' => (
     default     => $FALSE,
 );
 
+has '_available' => (
+    isa         => 'Bool',
+    is          => 'rw', 
+    default     => $FALSE,
+);
+
 
 # Build component from given parameters
 sub BUILD {
@@ -135,6 +141,7 @@ sub wait_eval_on_component_true {
     return $self->extjs->wait_eval_true( $componentExpression, $timeout );
 }
 
+
 # Working With Pop-Ups
 # Assumes only 1 currently opened window with target _blank
 # sub select_target_blank_window {
@@ -159,7 +166,7 @@ sub get_eval_component_string_property {
     my $self = shift;
     my ($property) = @_;
 
-    return $self->get_eval_on_component( ".$property" );
+    return $self->get_eval_on_component( ".$property;" );
 }
 
 
@@ -190,6 +197,26 @@ warn "get_eval_component_boolean_property: " . $result;
 #     protected boolean getEvalBooleanProperty(String name) { ... }
 #     protected int getEvalIntegerProperty(String name) { ... }
 #     protected double getEvalDoubleProperty(String name) { ... }
+
+
+# Checks if the component object is already available
+sub wait_for_component {
+    my $self = shift;
+
+    # Shortcut if check has been done
+    return $self
+        if $self->_available;
+
+    # Wait until component is resolvable
+    my $componentExpression = $self->get_expression() . ";";
+    $self->extjs->wait_until_expression_resolves( $componentExpression );
+
+    # Store success
+    $self->_available( $TRUE );
+
+    # Return $self for chaining
+    return $self;
+}
 
 
 # Checks if the component has already been rendered
