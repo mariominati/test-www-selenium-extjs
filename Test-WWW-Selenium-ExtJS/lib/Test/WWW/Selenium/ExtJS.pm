@@ -2,7 +2,7 @@ package Test::WWW::Selenium::ExtJS;
 
 use warnings;
 use strict;
-use version; our $VERSION = qv('0.0.3');
+use version; our $VERSION = qv('0.0.1');
 
 use Readonly;
 Readonly my $TRUE       => 1;
@@ -14,7 +14,7 @@ use Moose;                                       # Includes strict and warnings
 use Test::WWW::Selenium::ExtJS::Window;
 
 
-# selenium - Selenium proxy through which it can fire Selenese commands
+# selenium - Selenium proxy through which it can execute Selenese commands
 has 'selenium' => (
     isa         => 'WWW::Selenium', 
     is          => 'ro', 
@@ -22,38 +22,47 @@ has 'selenium' => (
     required    => 1
 );
 
+# js_preserve_window_objects - objects of the browsers window object that must
+# be available for processing the test expressions
 has 'js_preserve_window_objects' => (
     isa         => 'ArrayRef[Str]', 
     is          => 'ro', 
     default     => sub { [] },
 );
 
+# resize_window - the size of the browser window that we want it to resize to
 has 'resize_window' => (
     isa         => 'ArrayRef[Int]', 
     is          => 'ro', 
     predicate   => 'has_resize_window',
 );
 
+# maximize_window - if set to true the browser window is being maximized
 has 'maximize_window' => (
     isa         => 'Bool', 
     is          => 'ro', 
     default     => $FALSE,
 );
 
+# timeout - the timeout when waiting commands timeout and die
 has 'timeout' => (
     isa         => 'Int', 
     is          => 'ro', 
     default     => 15000,
 );
 
+# looptime - the interval for rechecking waiting commands
 has 'looptime' => (
     isa         => 'Int', 
     is          => 'ro', 
     default     => 500,
 );
 
-# Private attributes
 
+### Private attributes
+
+# _js_preserve_window_objects_string - a store for the javascript string
+# representing the windowobject that are available in test expressions
 has '_js_preserve_window_objects_string' => (
     is          => 'ro',
     lazy_build  => 1,
@@ -62,15 +71,16 @@ has '_js_preserve_window_objects_string' => (
 );
 
 
-# Build component from given parameters
+### Build component from given parameters
+
 sub BUILD {
     my $self = shift;
 
     # Set window dimensions if given
     if ($self->has_resize_window) {
         $self->selenium->get_eval( 
-            "window.moveTo(1,1); window.resizeTo(" . 
-            join (',', @{$self->resize_window}) . 
+            "window.moveTo(1,1); window.resizeTo(" .   # using 0,0 has problems
+            join (',', @{$self->resize_window}) .      # on some browsers / os
             ");" 
         );
     }
@@ -82,20 +92,9 @@ sub BUILD {
 }
 
 
-# Build javascript preserve window objects string
-sub _js_preserve_window_objects_string_builder {
-    my $self = shift;
-
-    my $javascript = "var Ext = this.Ext";
-    map { $javascript .= ", $_ = this.$_" } @{$self->js_preserve_window_objects};
-    $javascript .= ";";
-
-    return $javascript;
-}
-
+### Public methods
 
 # Evaluates expressions and returns result.
-
 sub get_eval {
     my $self = shift;
     my $expression = shift;
@@ -110,17 +109,13 @@ sub get_eval {
         "return " . $expression .
         "}).call( this.page().currentWindow );";
 
-#     return $self->selenium->get_eval( $expression );
-
     my $result = $self->selenium->get_eval( $anonymous_function );
 # warn "evaluating anonymous_function: ".$anonymous_function . "returns: ". $result;
     return $result;
 }
 
-###
-###   Methods to synchronise with AJAX
-###
 
+#   Methods to synchronise with AJAX
 
 # Returns as soon as the generic expression evals true, else throws exception
 # on timeout.
@@ -208,43 +203,169 @@ sub get_window {
     );
 }
 
+
+### Private methods
+
+# Build javascript preserve window objects string
+sub _js_preserve_window_objects_string_builder {
+    my $self = shift;
+
+    my $javascript = "var Ext = this.Ext";
+    map { $javascript .= ", $_ = this.$_" } @{$self->js_preserve_window_objects};
+    $javascript .= ";";
+
+    return $javascript;
+}
+
+
 1; # Magic true value required at end of module
 __END__
 
 =head1 NAME
 
-Test::WWW::Selenium::ExtJS - [One line description of module's purpose here]
+Test::WWW::Selenium::ExtJS - Testing ExtJS powered gui with selenium
 
 
 =head1 VERSION
 
-This document describes Test::WWW::Selenium::ExtJS version 0.0.1
+This document describes C<Test::WWW::Selenium::ExtJS> version C<0.0.1>.
 
 
 =head1 SYNOPSIS
 
-    use Test::WWW::Selenium::ExtJS;
+    # Testing a catalyst based app that uses ExtJS
+    use Test::WWW::Selenium::Catalyst 'MyApp', -selenium_args => "-multiWindow"; 
 
-=for author to fill in:
-    Brief code example(s) here showing commonest usage(s).
-    This section will be as far as many users bother reading
-    so make it as educational and exeplary as possible.
+    use Test::WWW::Selenium::ExtJS;
+    use Test::WWW::Selenium::ExtJS::Window;
+    use Test::WWW::Selenium::ExtJS::Form::TextField;
+    use Test::WWW::Selenium::ExtJS::Button;
+
+    use Test::More;
+
+    # Start catalyst app and load initial page
+    my $selenium = Test::WWW::Selenium::Catalyst->start; 
+    $selenium->open_ok ( 'http://localhost:3000/' );                   # Test 1
+
+    # Prepare ExtJS proxies
+    my $extjs = new Test::WWW::Selenium::ExtJS( 
+        selenium                    => $selenium, 
+        js_preserve_window_objects  => [qw( CustomMyApp swfobject )],
+        resize_window               => [1000, 600],
+    );
+
+    # Test login window
+    my $login = new Test::WWW::Selenium::Window( 
+        extjs   => $extjs, 
+        id      => 'login_window' 
+    );
+    is( $login->get_title, 
+        'Please enter your login data', 
+        'login window title' 
+    );                                                                 # Test 2
+    my $username = new Test::WWW::Selenium::ExtJS::Form::TextField( 
+        parent  => $login, 
+        name    => 'username' 
+    )->type_value( 'me_or_you' );             # Test 3 - does selenium->type_ok
+    my $password = new Test::WWW::Selenium::ExtJS::Form::TextField( 
+        parent  => $login, 
+        name    => 'password' 
+    )->type_value( 's3cr37' );                # Test 4 - does selenium->type_ok
+    my $login_button = new Test::WWW::Selenium::ExtJS::Button( 
+        parent  => $login->get_footer_toolbar, 
+        text    => 'Login' 
+    )->click();                              # Test 5 - does selenium->click_ok
+
+    # Mark end of tests
+    done_testing();
   
   
 =head1 DESCRIPTION
 
-=for author to fill in:
-    Write a full description of the module and its features here.
-    Use subsections (=head2, =head3) as appropriate.
+Automatic testing of an ExtJS based gui is made easy with this set of 
+modules.
+
+=head2 Concept
+
+The concept is based on an article of Lindsay Kay 
+(L<http://www.xeolabs.com/portal/articles/selenium-and-extjs>).
+As ExtJS is using randomly generated ids in the DOM they will not persist
+during working on you app. Using XPath expressions isn't also an option as
+they change often during developmen. It would be a pain to keep the tests
+up to date.
+The solution was to use ExtJS related javascript expressions to get the 
+ids of the ExtJS components that shall be tested by evaluating those
+expressions through selenium. With that ids we can easily act on the 
+specific components.
+    
+=head2 Implementation
+
+To realize this concept we provide a proxy class for each ExtJS component.
+We almost rebuild the complete ExtJS object tree to allow testing the gui
+in a well known way.
+Custom ExtJS components can be hold in custom proxy modules to abstract away
+the inner parts of that component and just offer a simple interface for
+testing.
 
 
 =head1 INTERFACE 
 
-=for author to fill in:
-    Write a separate section listing the public components of the modules
-    interface. These normally consist of either subroutines that may be
-    exported, or methods that may be called on objects belonging to the
-    classes provided by the module.
+=head2 Attributes
+
+=head3 C<selenium>
+
+Type: C<WWW::Selenium> object, B<required> attribute.
+
+The selenium proxy object through which we can execute selenese commands.
+
+=head3 C<js_preserve_window_objects>
+
+Type: C<ArrayRef[Str]>.
+
+Names of javascript objects of the browsers window object that must be 
+available for processing the test expressions.
+
+If you are using one of the Flash based ExtJS features you should include
+the C<swfobject> to make these functions work:
+
+    my $extjs = new Test::WWW::Selenium::ExtJS( 
+        selenium                    => $selenium, 
+        js_preserve_window_objects  => [qw( swfobject )],
+    );
+
+=head3 C<resize_window>
+
+Type: C<ArrayRef[Int]>.
+
+The size (width, height) of the browser window that we want it to resize to.
+
+=head3 C<maximize_window>
+
+Type: C<Bool>.
+
+If set to true the browser window is being maximized.
+
+If both C<resize_window> and C<maximize_window> are given, the window will be
+only resized and B<not> maximized.
+
+=head3 C<timeout>
+
+Type: C<Int>, Default: C<15000>.
+
+The timeout in milliseconds (thausends of a second) when waiting for commands 
+to evaluate in a given way (be true, be null, be not null). After timeout the
+commands die.
+
+=head3 C<looptime>
+
+Type: C<Int>, Default: C<500>.
+
+The interval in milliseconds (thausends of a second) to wait befor retrying a 
+waiting command.
+
+=head2 Methods
+
+#   Methods to synchronise with AJAX
 
 
 =head1 DIAGNOSTICS
