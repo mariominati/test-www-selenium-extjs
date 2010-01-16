@@ -11,8 +11,6 @@ Readonly my $FALSE      => 0;
 
 use Moose;                                       # Includes strict and warnings
 
-use Test::WWW::Selenium::ExtJS::Window;
-
 
 # selenium - Selenium proxy through which it can execute Selenese commands
 has 'selenium' => (
@@ -99,9 +97,11 @@ sub get_eval {
     my $self = shift;
     my $expression = shift;
 
-    # Build a closure around expression to move scope to current window object
-    # instead of using the selenium object to run commands in. Additionally we
-    # create a local varaible to access the Ext object.
+    # Build an anonymous sub around expression to move scope to current window
+    # object instead of using the selenium object to run commands in.
+    # Additionally we create a local varaible to access the Ext and other
+    # objects. We must explicitly 'return' otherwise the anonymous sub will
+    # always return null.
 
     my $anonymous_function =
         "(function (){ " . 
@@ -109,9 +109,7 @@ sub get_eval {
         "return " . $expression .
         "}).call( this.page().currentWindow );";
 
-    my $result = $self->selenium->get_eval( $anonymous_function );
-# warn "evaluating anonymous_function: ".$anonymous_function . "returns: ". $result;
-    return $result;
+    return $self->selenium->get_eval( $anonymous_function );
 }
 
 
@@ -120,7 +118,6 @@ sub get_eval {
 # Returns as soon as the generic expression evals true, else throws exception
 # on timeout.
 # This method is based this article: http://www.perlmonks.org/?node_id=720018
-
 sub wait_eval_true {
     my $self = shift;
     my ($expression, $timeout) = @_;
@@ -138,14 +135,11 @@ sub wait_eval_true {
         select(undef, undef, undef, ($self->looptime / 1000));
     }
 
-    die "Timed out waiting for JS code: '$expression'";
+    die "Timed out waiting for JS code (wait_eval_true): '$expression'";
 }
 
 
-
-
 # Returns true as soon as expression evaluates, else false on timeout.
-
 sub wait_until_expression_resolves {
     my $self = shift;
     my ($expression, $timeout) = @_;
@@ -169,7 +163,6 @@ sub wait_until_expression_resolves {
 
 
 # Returns true as soon as expression fails to resolve, else timeout exception
-
 sub wait_until_expression_not_resolves {
     my $self = shift;
     my ($expression, $timeout) = @_;
@@ -182,25 +175,14 @@ sub wait_until_expression_not_resolves {
         # Run expression and check result
         my $result = $self->get_eval( $expression );
 # TODO - check if the expression resolves or if it failed
-warn $result;
-        return if not $result;
+die $result;
+        return if ($result eq 'null');
 
         # Wait before next check
         select(undef, undef, undef, ($self->looptime / 1000));
     }
 
-    die "Timed out waiting for JS code: '$expression'";
-}
-
-
-sub get_window {
-    my $self = shift;
-    my ($id) = @_;
-
-    my $window = new Test::WWW::Selenium::ExtJS::Window( 
-        extjs    => $self,
-        id       => $id
-    );
+    die "Timed out waiting for JS code (wait_until_expression_not_resolves): '$expression'";
 }
 
 
@@ -363,85 +345,100 @@ Type: C<Int>, Default: C<500>.
 The interval in milliseconds (thausends of a second) to wait befor retrying a 
 waiting command.
 
-=head2 Methods
+=head2 General methods
 
-#   Methods to synchronise with AJAX
+=head3 C<get_eval>
+
+Evaluates the given expression in the scope of the current window object and 
+returns the result.
+
+The expression is evaluated in an anonymous javascript function:
+    (function (){
+        Ext = this.Ext;
+        return $expression
+    }).call( this.page().currentWindow );
+
+=head2 Methods to synchronise with AJAX
+
+=head3 C<wait_eval_true>
+
+Returns as soon as the expression evaluates true, else dies on timeout.
+
+=head3 C<wait_until_expression_resolves>
+
+Returns true as soon as expression evaluates, else false on timeout.
+
+=head3 C<wait_until_expression_not_resolves>
+
+Returns true as soon as expression fails to resolve, else dies on timeout.
 
 
 =head1 DIAGNOSTICS
 
-=for author to fill in:
-    List every single error and warning message that the module can
-    generate (even the ones that will "never happen"), with a full
-    explanation of each problem, one or more likely causes, and any
-    suggested remedies.
-
 =over
 
-=item C<< Error message here, perhaps with %s placeholders >>
+=item C<< Timed out waiting for JS code (wait_eval_true): '%s' >>
 
-[Description of error here]
+This error happens when the given expression can not be evaluated in the given 
+period of time. If the page is loading slowly you can try to increase the value
+of the L<timeout> attribute.
 
-=item C<< Another error message here >>
+=item C<< Timed out waiting for JS code (wait_until_expression_not_resolves): '%s' >>
 
-[Description of error here]
-
-[Et cetera, et cetera]
+This error happens when the given expression does not stop to resolve in the 
+given period of time. You can try to increase the value of the L<timeout> 
+attribute.
 
 =back
 
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
-=for author to fill in:
-    A full explanation of any configuration system(s) used by the
-    module, including the names and locations of any configuration
-    files, and the meaning of any environment variables or properties
-    that can be set. These descriptions must also include details of any
-    configuration language used.
-  
 Test::WWW::Selenium::ExtJS requires no configuration files or environment variables.
 
 
 =head1 DEPENDENCIES
 
-=for author to fill in:
-    A list of all the other modules that this module relies upon,
-    including any restrictions on versions, and an indication whether
-    the module is part of the standard Perl distribution, part of the
-    module's distribution, or must be installed separately. ]
+=head2 Configure time
 
-None.
+=over
 
+=item core modules
+
+Perl 5.10
+
+=item CPAN modules
+
+L<Module::Build>
+
+=back
+
+=head2 Run time
+
+=over
+
+=item core modules
+
+Perl 5.10
+
+=item CPAN modules
+
+L<Moose>
+
+=back
 
 =head1 INCOMPATIBILITIES
-
-=for author to fill in:
-    A list of any modules that this module cannot be used in conjunction
-    with. This may be due to name conflicts in the interface, or
-    competition for system or program resources, or due to internal
-    limitations of Perl (for example, many modules that use source code
-    filters are mutually incompatible).
 
 None reported.
 
 
 =head1 BUGS AND LIMITATIONS
 
-=for author to fill in:
-    A list of known problems with the module, together with some
-    indication Whether they are likely to be fixed in an upcoming
-    release. Also a list of restrictions on the features the module
-    does provide: data types that cannot be handled, performance issues
-    and the circumstances in which they may arise, practical
-    limitations on the size of data sets, special cases that are not
-    (yet) handled, etc.
-
 No bugs have been reported.
 
 Please report any bugs or feature requests to
-C<bug-test-www-selenium-extjs@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
+L<http://github.com/mariominati/test-www-selenium-extjs/issues>,
+or send an email to the author.
 
 
 =head1 AUTHOR
