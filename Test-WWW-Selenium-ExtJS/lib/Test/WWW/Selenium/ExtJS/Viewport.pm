@@ -17,6 +17,27 @@ has '+xtype' => (
 );
 
 
+# On loading the page (after login) we have to wait that the new page is being
+# loaded, Ext is being initialized and the viewport loaded
+sub wait_for_viewport_available {
+    my $self = shift;
+
+    # Get basic expression for this object
+    my $component_expression = $self->get_expression();
+
+    # Build javascript expression
+    my $expression = 
+        '(( this && Ext && Ext.getCmp && Ext.ComponentMgr && ' .
+        $component_expression . ' && ' .
+        $component_expression . '.rendered ) ? true : false)';
+
+    # Wait until the page has been loaded
+    $self->extjs->wait_eval_true( $expression );
+
+    # Allow chaining
+    return $self;
+}
+
 # Gets the toolbar object or the footer toolbar
 # sub get_north_panel {
 #     my $self = shift;
