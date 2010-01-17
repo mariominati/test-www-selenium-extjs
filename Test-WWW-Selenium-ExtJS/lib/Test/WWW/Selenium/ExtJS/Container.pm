@@ -107,6 +107,7 @@ sub _autodetect_layout {
 1;  # Magic true value required at end of module
 __END__
 
+
 =head1 NAME
 
 Test::WWW::Selenium::ExtJS::Container - Proxy class for Ext.Container
@@ -120,7 +121,7 @@ Look at L<Test::WWW::Selenium::ExtJS>.
 =head1 DESCRIPTION
 
 This is the proxy class for the Ext.Container object and extends the 
-L<Test::WWW::Selenium::ExtJS::Component> object.
+L<Test::WWW::Selenium::ExtJS::BoxComponent> object.
 L<http://www.extjs.com/deploy/dev/docs/?class=Ext.Container>
 
 
@@ -129,7 +130,7 @@ L<http://www.extjs.com/deploy/dev/docs/?class=Ext.Container>
 =head2 Attributes
 
 The attributes of the base class are described at 
-L<Test::WWW::Selenium::ExtJS::Component>.
+L<Test::WWW::Selenium::ExtJS::BoxComponent>.
 
 =head3 C<xtype>
 
@@ -144,6 +145,9 @@ Type: C<Str>.
 Stores the name of the layout of this container.
 
 =head2 General methods
+
+The methods of the base class are described at 
+L<Test::WWW::Selenium::ExtJS::BoxComponent>.
 
 =head3 C<get_layoutname>
 
