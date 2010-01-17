@@ -8,7 +8,7 @@ use Readonly;
 Readonly my $TRUE       => 1;
 Readonly my $FALSE      => 0;
 
-
+use WWW::Selenium;
 use Moose;                                       # Includes strict and warnings
 
 
@@ -113,7 +113,8 @@ sub get_eval {
 }
 
 
-#   Methods to synchronise with AJAX
+### Methods to synchronise with AJAX
+
 
 # Returns as soon as the generic expression evals true, else throws exception
 # on timeout.
@@ -151,7 +152,6 @@ sub wait_until_expression_resolves {
 
         # Run expression and check result
         my $result = $self->get_eval( $expression );
-# warn 'wait_until_expression_resolves - expression / result: ' . $expression . "/" . $result;
         return $TRUE if not ($result eq 'null');
 
         # Wait before next check
@@ -289,6 +289,19 @@ Custom ExtJS components can be hold in custom proxy modules to abstract away
 the inner parts of that component and just offer a simple interface for
 testing.
 
+More informations can be found in the proxy modules documentation:
+
+=over
+
+=item *
+
+L<Test::WWW::Selenium::Component>
+
+=item *
+
+L<Test::WWW::Selenium::Container>
+
+=back
 
 =head1 INTERFACE 
 
@@ -419,11 +432,11 @@ L<Module::Build>
 
 =item core modules
 
-Perl 5.10
+Perl 5.10, L<version>
 
 =item CPAN modules
 
-L<Moose>
+L<Moose>, L<Readonly>, L<WWW::Selenium>
 
 =back
 

@@ -1,14 +1,13 @@
 package Test::WWW::Selenium::ExtJS::Component;
 
-use Moose;                                       # Includes strict and warnings
+use Test::WWW::Selenium::ExtJS;
 
-use WWW::Selenium;
 use Readonly;
-# use Carp;
+Readonly my $TRUE           => 1;
+Readonly my $FALSE          => 0;
+Readonly my $ID_FUNCTION    => ".getId()";
 
-Readonly my $TRUE       => 1;
-Readonly my $FALSE      => 0;
-Readonly my $ID_FUNCTION => ".getId()";
+use Moose;                                       # Includes strict and warnings
 
 
 # parent - proxy for the container Ext component
@@ -71,19 +70,13 @@ sub BUILD {
     # Build a expression from a given id
     if ($self->has_id) {
         $self->expression( "Ext.getCmp('" . $self->id . "')" );
-#         $self->expression( "window.Ext.getCmp('" . $self->id . "')" );
     }
-
-    # Check required parameters
-#     die "Missing parameter" 
-#         unless $self->has_extjs && $self->has_expression;
 };
 
 
 # Returns the ID of the Ext component, found with the proxy's JS expression. 
 # This is overridden in some subclasses for where the expression to get 
 # the ID varies.
-
 sub get_id {
     my $self = shift;
 
@@ -93,7 +86,6 @@ sub get_id {
 
 # Returns an XPath to the Ext component, which contains the ID provided 
 # by get_id()
-
 sub get_xpath {
     my $self = shift;
 
@@ -102,7 +94,6 @@ sub get_xpath {
 
 
 # Returns the absolute expression that resolves this proxy's Ext component.
-
 sub get_expression {
     my $self = shift;
 
@@ -113,7 +104,6 @@ sub get_expression {
 
 
 # Immediately evaluates expression on this component.
-
 sub get_eval_on_component {
     my $self = shift;
     my $expression = shift;
@@ -130,8 +120,7 @@ sub get_eval_on_component {
 
 
 # Returns as soon as the expression for this component evals true, 
-# else throws exception on timeout.
-
+# else dies on timeout.
 sub wait_eval_on_component_true {
     my $self = shift;
     my ($expression, $timeout) = @_;
@@ -140,21 +129,6 @@ sub wait_eval_on_component_true {
 
     return $self->extjs->wait_eval_true( $componentExpression, $timeout );
 }
-
-
-# Working With Pop-Ups
-# Assumes only 1 currently opened window with target _blank
-# sub select_target_blank_window {
-#     my ($self, $timeout) = @_;
-#     my $window_name;
-#     for (1 .. $timeout / 100) {
-#        ($window_name) = grep {/selenium_blank\d+/} $self->get_all_window_names;
-#        last if defined $window_name;
-#        $self->pause(100);
-#     }
-#     croak "Timed out waiting to select blank target window" if ! defined $window_name;
-#     return $self->select_window($window_name);
-# }
 
 
 ###
@@ -177,7 +151,9 @@ sub get_eval_component_property_exists {
     my $result = $self->get_eval_component_string_property( $property );
 
 # TODO - check results
-warn $result;
+die $result;
+
+    return ($result eq 'null');
 }
 
 
@@ -186,18 +162,19 @@ sub get_eval_component_boolean_property {
     my ($property) = @_;
 
     my $result = $self->get_eval_component_string_property( $property );
-warn "get_eval_component_boolean_property: " . $result;
 
     return ( $result eq "true" ? $TRUE : $FALSE );
 }
 
 
-#     protected String getEvalStringProperty(String name) { ... }
-#     protected boolean getEvalPropertyExists(String name) { ... }
-#     protected boolean getEvalBooleanProperty(String name) { ... }
+# TODO
 #     protected int getEvalIntegerProperty(String name) { ... }
 #     protected double getEvalDoubleProperty(String name) { ... }
 
+
+###
+###   Methods to synchronise with AJAX
+###
 
 # Checks if the component object is already available
 sub wait_for_component {
@@ -252,5 +229,178 @@ __END__
 
 =head1 NAME
 
-Test::WWW::Selenium::ExtJS::Document::Component - Selenium tests for ExtJS components
+Test::WWW::Selenium::ExtJS::Component - Proxy class for Ext.Component
+
+
+=head1 SYNOPSIS
+
+Look at L<Test::WWW::Selenium::ExtJS>.
+  
+  
+=head1 DESCRIPTION
+
+This is the proxy class for the Ext.component object. It is the base class for
+all other gui widget classes as it is in the ExtJS framework.
+
+
+=head1 INTERFACE 
+
+=head2 Attributes
+
+=head3 C<parent>
+
+Type: C<Test::WWW::Selenium::ExtJS::Component> object.
+
+Proxy for the containing ExtJS component.
+
+We need either the L<parent> or the L<extjs> attribute to connect to the 
+selenium object.
+
+=head3 C<extjs>
+
+Type: C<Test::WWW::Selenium::ExtJS> object.
+
+The central ExtJS object.
+
+We need either the L<parent> or the L<extjs> attribute to connect to the 
+selenium object.
+
+=head3 C<expression>
+
+Type: C<Str>.
+
+The JavaScript expression that will be evaluated to access the ExtJS component
+in selenium.
+
+If L<expression> is not given, we need the L<id> attribute.
+
+=head3 C<id>
+
+Type: C<Str>.
+
+Sets the id of the Ext component. This is usually used for windows, viewports
+and other objects with fixed id.
+
+If L<id> is not given, we need the L<expression> attribute.
+
+=head3 C<xtype>
+
+Type: C<Str>.
+
+The XType of the Ext component, default is 'component'.
+
+=head2 General methods
+
+=head3 C<get_id>
+
+Returns the ID of the Ext component, found with the proxy's JS expression. 
+
+=head3 C<get_xpath>
+
+Returns an XPath to the Ext component, which contains the ID provided 
+by L<get_id>.
+
+=head3 C<get_expression>
+
+Returns the absolute expression that resolves this proxy's Ext component.
+
+=head3 C<get_eval_on_component>
+
+Evaluates expression on this component.
+
+=head2 Convenience methods to evaluate properties
+
+=head3 C<get_eval_component_string_property>
+
+Gets a property from the Ext component as string.
+
+=head3 C<get_eval_component_property_exists>
+
+Returns true if the requested property exists in the Ext component.
+
+=head3 C<get_eval_component_boolean_property>
+
+Gets a property from the Ext component as boolean value.
+If the property equals 'true' we return a true value.
+
+=head2 Methods to synchronise with AJAX
+
+=head3 C<wait_for_component>
+
+Does a wait loop until the component is available.
+
+=head3 C<wait_for_rendered>
+
+Does a wait loop until the component is rendered.
+
+=head3 C<is_enabled>
+
+Returns true if the 'disabled' property of the component is B<not> set,
+false otherwise.
+
+
+=head1 DIAGNOSTICS
+
+Look at L<Test::WWW::Selenium::ExtJS>.
+
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+Look at L<Test::WWW::Selenium::ExtJS>.
+
+
+=head1 DEPENDENCIES
+
+Look at L<Test::WWW::Selenium::ExtJS>.
+
+
+=head1 INCOMPATIBILITIES
+
+Look at L<Test::WWW::Selenium::ExtJS>.
+
+
+=head1 BUGS AND LIMITATIONS
+
+Look at L<Test::WWW::Selenium::ExtJS>.
+
+Please report any bugs or feature requests to
+L<http://github.com/mariominati/test-www-selenium-extjs/issues>,
+or send an email to the author.
+
+
+=head1 AUTHOR
+
+Mario Minati  C<< <mario.minati@minati.de> >>
+
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 2009, Mario Minati C<< <mario.minati@minati.de> >>. All rights reserved.
+
+This module is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>.
+
+
+=head1 DISCLAIMER OF WARRANTY
+
+BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
+LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
 
