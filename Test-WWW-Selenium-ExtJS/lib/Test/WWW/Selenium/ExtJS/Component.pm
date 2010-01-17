@@ -239,8 +239,9 @@ Look at L<Test::WWW::Selenium::ExtJS>.
   
 =head1 DESCRIPTION
 
-This is the proxy class for the Ext.component object. It is the base class for
+This is the proxy class for the Ext.Component object. It is the base class for
 all other gui widget classes as it is in the ExtJS framework.
+L<http://www.extjs.com/deploy/dev/docs/?class=Ext.Component>
 
 
 =head1 INTERFACE 
