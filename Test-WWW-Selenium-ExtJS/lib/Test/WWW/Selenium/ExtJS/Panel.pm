@@ -1,5 +1,7 @@
 package Test::WWW::Selenium::ExtJS::Panel;
 
+use Test::WWW::Selenium::ExtJS::Panel::TopToolbar;
+use Test::WWW::Selenium::ExtJS::Panel::BottomToolbar;
 use Test::WWW::Selenium::ExtJS::Panel::FooterToolbar;
 
 use Moose;                                       # Includes strict and warnings
@@ -17,13 +19,25 @@ has '+xtype' => (
 );
 
 
+# Returns the toolbar object for the top toolbar
+sub get_top_toolbar {
+    my $self = shift;
+
+    return new Test::WWW::Selenium::ExtJS::Panel::TopToolbar( parent => $self );
+}
+
+# Returns the toolbar object for the bottom toolbar
+sub get_bottom_toolbar {
+    my $self = shift;
+
+    return new Test::WWW::Selenium::ExtJS::Panel::BottomToolbar( parent => $self );
+}
+
 # Returns the toolbar object for the footer toolbar
 sub get_footer_toolbar {
     my $self = shift;
 
-    my $toolbar = new Test::WWW::Selenium::ExtJS::Panel::FooterToolbar( parent => $self );
-
-    return $toolbar;
+    return new Test::WWW::Selenium::ExtJS::Panel::FooterToolbar( parent => $self );
 }
 
 
@@ -65,6 +79,14 @@ The XType of the Ext component, default is 'panel'.
 
 The methods of the base class are described at 
 L<Test::WWW::Selenium::ExtJS::Container>.
+
+=head3 C<get_top_toolbar>
+
+Returns the toolbar object for the top toolbar. 
+
+=head3 C<get_bottom_toolbar>
+
+Returns the toolbar object for the bottom toolbar. 
 
 =head3 C<get_footer_toolbar>
 
