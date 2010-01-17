@@ -105,7 +105,7 @@ L<Test::WWW::Selenium::ExtJS::Component>.
 
 Executes a click on the button.
 
-The click is executed via seleniums click_ok method, so it counts as test.
+The click is executed via seleniums click_ok method, it counts as test.
 
 
 =head1 DIAGNOSTICS
