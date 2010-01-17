@@ -60,7 +60,7 @@ L<Test::WWW::Selenium::ExtJS::Component>.
 
 =head1 DIAGNOSTICS
 
-Look at L<Test::WWW::Selenium::ExtJS>.
+Look at L<Test::WWW::Selenium::ExtJS::Component>.
 
 
 =head1 CONFIGURATION AND ENVIRONMENT

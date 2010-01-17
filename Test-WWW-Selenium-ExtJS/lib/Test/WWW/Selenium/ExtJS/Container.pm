@@ -161,7 +161,7 @@ Returns the layout proxy object.
 
 =head1 DIAGNOSTICS
 
-Look at L<Test::WWW::Selenium::ExtJS>.
+Look at L<Test::WWW::Selenium::ExtJS::BoxComponent>.
 
 =over
 
