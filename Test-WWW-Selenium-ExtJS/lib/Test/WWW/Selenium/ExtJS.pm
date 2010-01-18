@@ -9,6 +9,7 @@ Readonly my $TRUE       => 1;
 Readonly my $FALSE      => 0;
 
 use WWW::Selenium;
+use Time::HiRes qw( sleep );
 use Moose;                                       # Includes strict and warnings
 
 
@@ -133,7 +134,7 @@ sub wait_eval_true {
         return if $result eq 'true';
 
         # Wait before next check
-        select(undef, undef, undef, ($self->looptime / 1000));
+        sleep ($self->looptime / 1000);
     }
 
     die "Timed out waiting for JS code (wait_eval_true): '$expression'";
@@ -155,7 +156,7 @@ sub wait_until_expression_resolves {
         return $TRUE if not ($result eq 'null');
 
         # Wait before next check
-        select(undef, undef, undef, ($self->looptime / 1000));
+        sleep ($self->looptime / 1000);
     }
 
     return $FALSE;
@@ -179,7 +180,7 @@ die $result;
         return if ($result eq 'null');
 
         # Wait before next check
-        select(undef, undef, undef, ($self->looptime / 1000));
+        sleep ($self->looptime / 1000);
     }
 
     die "Timed out waiting for JS code (wait_until_expression_not_resolves): '$expression'";
@@ -436,7 +437,7 @@ Perl 5.10, L<version>
 
 =item CPAN modules
 
-L<Moose>, L<Readonly>, L<WWW::Selenium>
+L<Moose>, L<Readonly>, L<WWW::Selenium>, L<Time::HiRes>
 
 =back
 
