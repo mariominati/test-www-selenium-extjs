@@ -2,12 +2,12 @@ package Test::WWW::Selenium::ExtJS::Component;
 
 use Test::WWW::Selenium::ExtJS;
 
+use Moose;                                       # Includes strict and warnings
+
 use Readonly;
 Readonly my $TRUE           => 1;
 Readonly my $FALSE          => 0;
 Readonly my $ID_FUNCTION    => ".getId()";
-
-use Moose;                                       # Includes strict and warnings
 
 
 # parent - proxy for the container Ext component
@@ -308,6 +308,12 @@ Returns the absolute expression that resolves this proxy's Ext component.
 =head3 C<get_eval_on_component>
 
 Evaluates expression on this component.
+
+=head2 Component methods to synchronise with AJAX
+
+=head3 C<wait_eval_on_component_true>
+
+Waits until the expression for this component evals true, dies on timeout.
 
 =head2 Convenience methods to evaluate properties
 
