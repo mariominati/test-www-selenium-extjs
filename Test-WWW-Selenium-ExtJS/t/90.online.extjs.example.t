@@ -14,10 +14,11 @@ my $request = HTTP::Request->new( GET => $EXTJS );
 my $ua = LWP::UserAgent->new;
 my $response = $ua->request( $request );
 
-
 plan( skip_all => "Could not connect to ExtJS example web; skipping" ) 
     if ($response->code != 200);
 
+
+# Find selenium server
 my $sel;
 eval {
     # create Selenium instance
@@ -27,18 +28,24 @@ eval {
         browser     => "*firefox", 
         browser_url => 'http://www.google.com/',
     );
-    $sel->open_ok ( '$EXTJS' );
+    $sel->open_ok ( $EXTJS );
 };
 
 plan( skip_all => "Selenium could not be started - Is a selenium server installed and Firefox available?; skipping" ) 
     if $@;
 
+
 # Prepare ExtJS proxies
 my $extjs = new Test::WWW::Selenium::ExtJS( 
     selenium                    => $sel, 
-    js_preserve_window_objects  => [qw( Glue swfobject )],
-#     resize_window               => [1000, 600],
+    js_preserve_window_objects  => [qw( swfobject )],
     maximize_window             => 1,
 );
+
+# Click button to open example window
+$sel->click_ok ( 'show-btn' );
+
+# Wait 10 secs
+$sel->pause ( 10000 );
 
 done_testing();
