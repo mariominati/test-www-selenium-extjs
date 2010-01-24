@@ -304,6 +304,19 @@ L<Test::WWW::Selenium::Container>
 
 =back
 
+=head2 State
+
+Currently we consider these modules as experimental, as it is beyond our 
+possibilites to check all the different combinations of ExtJS components.
+
+Thus we provide a proove of concept test based on the ExtJS examples. 
+It expects a running Selenium instance on the default port 4444 and a firefox
+browser. So the test is quite platform dependend.
+
+This testing suite is currently used for a big ExtJS application with many
+different components, popup windows, custom components and so on. All provided
+proxy modules are working smoothly in these tests.
+
 =head1 INTERFACE 
 
 =head2 Attributes
