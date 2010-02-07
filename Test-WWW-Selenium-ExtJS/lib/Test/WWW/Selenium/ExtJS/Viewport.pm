@@ -15,27 +15,6 @@ has '+xtype' => (
 );
 
 
-# On loading the page (after login) we have to wait that the new page is being
-# loaded, Ext is being initialized and the viewport loaded
-sub wait_for_viewport_available {
-    my $self = shift;
-
-    # Get basic expression for this object
-    my $component_expression = $self->get_expression();
-
-    # Build javascript expression
-    my $expression = 
-        '(( this && Ext && Ext.getCmp && Ext.ComponentMgr && ' .
-        $component_expression . ' && ' .
-        $component_expression . '.rendered ) ? true : false)';
-
-    # Wait until the page has been loaded
-    $self->extjs->wait_eval_true( $expression );
-
-    # Allow chaining
-    return $self;
-}
-
 1;  # Magic true value required at end of module
 __END__
 
@@ -74,13 +53,6 @@ The XType of the Ext component, default is 'viewport'.
 
 The methods of the base class are described at 
 L<Test::WWW::Selenium::ExtJS::Container>.
-
-=head3 C<wait_for_viewport_available>
-
-Waiting until the viewport is available.
-
-On loading the page (e. g. after login) we have to wait that the new page 
-is loaded, Ext is initialized and the viewport rendered.
 
 
 =head1 DIAGNOSTICS
