@@ -31,11 +31,18 @@ has 'expression' => (
     predicate   => 'has_expression',
 );
 
-# id - id of the Ext component
-has 'id' => (
+# ext_id - id of the Ext component
+has 'ext_id' => (
     isa         => 'Str', 
-    is          => 'ro', 
-    predicate   => 'has_id',
+    is          => 'rw', 
+    predicate   => 'has_ext_id',
+);
+
+# html_id - id of the HTML representation of the Ext component
+has 'html_id' => (
+    isa         => 'Str', 
+    is          => 'rw', 
+    predicate   => 'has_html_id',
 );
 
 # xtype - The XType of the Ext component
@@ -67,29 +74,69 @@ sub BUILD {
         $self->extjs( $self->parent->extjs );
     }
 
-    # Build a expression from a given id
-    if ($self->has_id) {
-        $self->expression( "Ext.getCmp('" . $self->id . "')" );
+    # Build a expression from a given ext id
+    if ($self->has_ext_id) {
+        $self->expression( "Ext.getCmp('" . $self->ext_id . "')" );
+        $self->html_id( $self->ext_id );
     }
+
+    # If we only got a html_id then we will on the first call of get_expression
+    # to find the ext_js id
 };
 
 
-# Returns the ID of the Ext component, found with the proxy's JS expression. 
+# Returns the HTML ID of the Ext component, found with the proxy's JS expression. 
 # This is overridden in some subclasses for where the expression to get 
 # the ID varies.
-sub get_id {
+sub get_html_id {
     my $self = shift;
+
+    return $self->html_id
+        if $self->has_html_id;
 
     return $self->extjs->get_eval( $self->get_expression() . $ID_FUNCTION );
 }
 
 
+# wait_for_component_search_by_id
+sub wait_for_extjs_id_from_html_id {
+    my $self = shift;
+
+    # if this method is called on a component without an id throw an exception
+    die "The html id of this component has not been defined."
+        if ( not $self->has_html_id );
+
+    # create javascript that find's a given dom id in all components
+    my $js =
+        "var component_id;
+        if ( this && Ext && Ext.ComponentMgr ) {
+            Ext.ComponentMgr.all.each( function(item,index,length) {     
+                if ( item.el.id == '" . $self->html_id . "') {
+                    component_id = item.getId();
+                    return false;     
+                } 
+            });
+        }
+        return component_id;";
+
+    # Wait until the has has been found
+    my $id = $self->extjs->wait_until_pure_expression_resolves( $js );
+
+    # Rewrite id and expression
+    $self->ext_id ( $id );
+    $self->expression( "Ext.getCmp('" . $self->ext_id . "')" );
+
+    # Allow chaining
+    return $self;
+}
+
+
 # Returns an XPath to the Ext component, which contains the ID provided 
-# by get_id()
+# by get_html_id()
 sub get_xpath {
     my $self = shift;
 
-    return "//*[\@id='" . $self->get_id() . "']";
+    return "//*[\@id='" . $self->get_html_id() . "']";
 }
 
 
@@ -97,11 +144,15 @@ sub get_xpath {
 sub get_expression {
     my $self = shift;
 
+    # Search for ext_id if none is set
+    if ($self->has_html_id && !$self->has_ext_id) {
+        $self->wait_for_extjs_id_from_html_id();
+    }
+
     return $self->has_parent 
         ? $self->parent->get_expression() . $self->expression 
         : $self->expression;
 }
-
 
 # Immediately evaluates expression on this component.
 sub get_eval_on_component {
@@ -197,15 +248,27 @@ sub wait_for_component {
 
 
 # Checks if the component has already been rendered
-sub wait_for_rendered {
+sub wait_for_component_rendered {
     my $self = shift;
 
     # Shortcut if check has been done
     return $self
         if $self->_rendered;
 
-    # Wait until component has been rendered
-    $self->wait_eval_on_component_true( ".rendered;" );
+#     # Wait until component has been rendered
+#     $self->wait_eval_on_component_true( ".rendered;" );
+
+    # Get basic expression for this object
+    my $component_expression = $self->get_expression();
+
+    # Build javascript expression
+    my $expression = 
+        '(( this && Ext && Ext.getCmp && Ext.ComponentMgr && ' .
+        $component_expression . ' && ' .
+        $component_expression . '.rendered ) ? true : false)';
+
+    # Wait until the page has been loaded
+    $self->extjs->wait_eval_true( $expression );
 
     # Store success
     $self->_rendered( $TRUE );
@@ -336,7 +399,7 @@ If the property equals 'true' we return a true value.
 
 Does a wait loop until the component is available.
 
-=head3 C<wait_for_rendered>
+=head3 C<wait_for_component_rendered>
 
 Does a wait loop until the component is rendered.
 
