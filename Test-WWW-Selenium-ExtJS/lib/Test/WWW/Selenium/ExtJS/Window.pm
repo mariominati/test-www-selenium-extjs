@@ -20,9 +20,13 @@ has '+xtype' => (
 sub get_title {
     my $self = shift;
 
-    $self->wait_for_rendered;
+    $self->wait_for_component_rendered;
 
-    return $self->get_eval_on_component( ".title;" );
+    return $self->extjs->selenium->get_text ( 
+        $self->get_xpath() . 
+        "//span[contains(\@class, 'x-window-header-text')]" 
+    );
+#     return $self->get_eval_on_component( ".title;" );
 }
 
 
