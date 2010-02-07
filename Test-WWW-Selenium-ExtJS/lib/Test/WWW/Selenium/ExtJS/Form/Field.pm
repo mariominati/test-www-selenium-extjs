@@ -45,7 +45,7 @@ sub BUILD {
 sub focus {
     my $self = shift;
 
-    $self->extjs->selenium->fire_event( $self->get_id, "focus" );
+    $self->extjs->selenium->fire_event( $self->get_html_id, "focus" );
 
     return $self;
 }
@@ -56,7 +56,7 @@ sub focus {
 sub blur {
     my $self = shift;
 
-    $self->extjs->selenium->fire_event( $self->get_id, "blur" );
+    $self->extjs->selenium->fire_event( $self->get_html_id, "blur" );
 
     return $self;
 }
@@ -68,9 +68,7 @@ sub type {
     my $self = shift;
     my ($text) = @_;
 
-    my $id = $self->get_id;
-
-    $self->extjs->selenium->type_ok( $self->get_id, $text );
+    $self->extjs->selenium->type_ok( $self->get_html_id, $text );
 
     return $self;
 }

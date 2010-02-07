@@ -50,7 +50,7 @@ sub click {
     $self->wait_eval_on_component_true( ".disabled == false;" );
 
     # Perform the click on the button
-    $self->extjs->selenium->click_ok( $self->get_id );
+    $self->extjs->selenium->click_ok( $self->get_html_id );
 
     return $self;
 }
