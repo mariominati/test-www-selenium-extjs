@@ -29,7 +29,7 @@ sub type_value {
     my ( $value ) = @_;
 
     # Return for chaining
-    return $self->wait_for_rendered->focus->type( $value );
+    return $self->wait_for_component_rendered->focus->type( $value );
 }
 
 1;  # Magic true value required at end of module
