@@ -98,16 +98,25 @@ sub get_eval {
     my $self = shift;
     my $expression = shift;
 
+    return $self->get_pure_eval( "return $expression" );
+}
+
+# Evaluates expressions and returns result.
+sub get_pure_eval {
+    my $self = shift;
+    my $expression = shift;
+
     # Build an anonymous sub around expression to move scope to current window
     # object instead of using the selenium object to run commands in.
     # Additionally we create a local varaible to access the Ext and other
     # objects. We must explicitly 'return' otherwise the anonymous sub will
-    # always return null.
+    # always return null, this return must be included inside the expression
+    # parameter.
 
     my $anonymous_function =
         "(function (){ " . 
         $self->_js_preserve_window_objects_string .
-        "return " . $expression .
+        $expression .
         "}).call( this.page().currentWindow );";
 
     return $self->selenium->get_eval( $anonymous_function );
@@ -141,8 +150,7 @@ sub wait_eval_true {
 }
 
 
-# Returns true as soon as expression evaluates, else false on timeout.
-sub wait_until_expression_resolves {
+sub wait_until_pure_expression_resolves {
     my $self = shift;
     my ($expression, $timeout) = @_;
 
@@ -152,14 +160,30 @@ sub wait_until_expression_resolves {
     for (1 .. $timeout / $self->looptime) {
 
         # Run expression and check result
-        my $result = $self->get_eval( $expression );
-        return $TRUE if not ($result eq 'null');
+        my $result = $self->get_pure_eval( $expression );
+
+        # return resut if it evals as a true value otherwise TRUE 
+        # if we got a not null return value
+        return ( $result ? $result : $TRUE )
+            if not ($result eq 'null');
 
         # Wait before next check
         sleep ($self->looptime / 1000);
     }
 
     return $FALSE;
+}
+
+
+# Returns true as soon as expression evaluates, else false on timeout.
+sub wait_until_expression_resolves {
+    my $self = shift;
+    my ($expression, $timeout) = @_;
+
+    return $self->wait_until_pure_expression_resolves( 
+        "return $expression", 
+        $timeout 
+    );
 }
 
 
