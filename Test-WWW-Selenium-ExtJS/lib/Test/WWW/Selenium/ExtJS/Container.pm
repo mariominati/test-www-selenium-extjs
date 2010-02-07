@@ -80,7 +80,7 @@ sub _autodetect_layout {
     my $self = shift;
 
     # wait until container is ready
-    $self->wait_for_component->wait_for_rendered;
+    $self->wait_for_component_rendered;
 
     # get expression to access this container
     my $objectExpression = $self->get_expression;
