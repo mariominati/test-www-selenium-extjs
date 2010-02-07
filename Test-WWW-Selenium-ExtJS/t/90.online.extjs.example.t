@@ -4,6 +4,7 @@ use HTTP::Request;
 use LWP::UserAgent;
 use Test::WWW::Selenium;
 use Test::WWW::Selenium::ExtJS;
+use Test::WWW::Selenium::ExtJS::Window;
 
 use Readonly;
 Readonly my $EXTJS => 'http://www.extjs.com/deploy/dev/examples/window/hello.html';
@@ -22,7 +23,7 @@ plan( skip_all => "Could not connect to ExtJS example web; skipping" )
 my $sel;
 eval {
     # create Selenium instance
-    $sel = Test::WWW::Selenium->new( 
+    $sel = Test::WWW::Selenium->new ( 
         host        => "localhost", 
         port        => 4444, 
         browser     => "*firefox", 
@@ -31,12 +32,12 @@ eval {
     $sel->open_ok ( $EXTJS );
 };
 
-plan( skip_all => "Selenium could not be started - Is a selenium server installed and Firefox available?; skipping" ) 
+plan ( skip_all => "Selenium could not be started - Is a selenium server running and Firefox available?; skipping" ) 
     if $@;
 
 
 # Prepare ExtJS proxies
-my $extjs = new Test::WWW::Selenium::ExtJS( 
+my $extjs = new Test::WWW::Selenium::ExtJS ( 
     selenium                    => $sel, 
     js_preserve_window_objects  => [qw( swfobject )],
     maximize_window             => 1,
@@ -45,7 +46,17 @@ my $extjs = new Test::WWW::Selenium::ExtJS(
 # Click button to open example window
 $sel->click_ok ( 'show-btn' );
 
-# Wait 10 secs
-$sel->pause ( 10000 );
+# Create window proxy
+my $window = new Test::WWW::Selenium::ExtJS::Window ( 
+    extjs   => $extjs, 
+    html_id => 'hello-win' 
+);
 
+# Test window title
+is ( $window->get_title, 'Hello Dialog', 'window title' );
+
+# Keep window visible for 3 secs
+# $sel->pause ( 3000 );
+
+# End testing
 done_testing();
