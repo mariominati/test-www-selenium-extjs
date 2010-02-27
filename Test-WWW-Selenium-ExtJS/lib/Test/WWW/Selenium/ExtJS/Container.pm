@@ -4,22 +4,27 @@ use Moose;                                       # Includes strict and warnings
 
 extends "Test::WWW::Selenium::ExtJS::BoxComponent";
 
+use Carp qw/ croak /;
+
 use Readonly;
 Readonly my $TRUE   => 1;
 Readonly my $FALSE  => 0;
 
 # map layout names to proxy class names
-Readonly my $LAYOUT_PROXIES => {
-    card    =>  'CardLayout',
-    anchor  =>  'AnchorLayout',
-    border  =>  'BorderLayout',
-    box     =>  'BoxLayout', 
-    column  =>  'ColumnLayout', 
-    fit     =>  'FitLayout', 
-    menu    =>  'MenuLayout', 
-    table   =>  'TableLayout', 
-    toolbar =>  'ToolbarLayout',
-};
+# Be aware of the order of this list. We must define the most specific classes
+# first as the parent classes will fullfill the instanceof check for it's 
+# derived classes too.
+Readonly my $LAYOUT_PROXIES => [
+    { card    =>  'CardLayout' },
+    { anchor  =>  'AnchorLayout' },
+    { border  =>  'BorderLayout' },
+    { box     =>  'BoxLayout' }, 
+    { column  =>  'ColumnLayout' }, 
+    { fit     =>  'FitLayout' }, 
+    { menu    =>  'MenuLayout' }, 
+    { table   =>  'TableLayout' }, 
+    { toolbar =>  'ToolbarLayout' },
+];
 
 
 # xtype - set the default xtype of this Ext component
@@ -59,15 +64,18 @@ sub get_layout {
     $layout = $self->_autodetect_layout
         if not (defined $layout && length $layout);
 
-    # convert layout name into proxy class name
-    my $layout_proxy_name = $LAYOUT_PROXIES->{ lc ($layout) };
+    # get proxy class name from layout name
+    my ($layout_proxy_name) = 
+        map { (values %$_)[0] } 
+        grep { (keys %$_)[0] eq lc ($layout) } 
+        @$LAYOUT_PROXIES;
     die "layout has not been defined"
         if not $layout_proxy_name;
     my $layout_proxy_classname = 
         "Test::WWW::Selenium::ExtJS::Layout::" . $layout_proxy_name;
 
     # load proxy class
-    require $layout_proxy_classname; 
+    require_class( $layout_proxy_classname );
     
     # create and return layout object
     my $layout_object = $layout_proxy_classname->new( parent => $self );
@@ -90,9 +98,10 @@ sub _autodetect_layout {
         "(function (){" .
             $self->extjs->_js_preserve_window_objects_string .
             "var layout = $objectExpression.getLayout();";
-    foreach my $key (keys %$LAYOUT_PROXIES) {
+    foreach my $pair (@$LAYOUT_PROXIES) {
+        my ($key, $value) = ((keys %$pair)[0], (values %$pair)[0]);
         $layoutExpression .= "
-            if (layout instanceof Ext.layout." . $LAYOUT_PROXIES->{ $key } . ") { return '" . $key . "'; }";
+            if (layout instanceof Ext.layout." . $value . ") { return '" . $key . "'; }";
     }
     $layoutExpression .= "
             return 'auto'; 
@@ -102,6 +111,25 @@ sub _autodetect_layout {
     my $result = $self->extjs->selenium->get_eval( $layoutExpression );
     return $result;
 }
+
+
+sub require_class {
+    my ($class) = @_;
+
+    croak "class argument missing" if !defined $class;
+
+    $class =~ s|::|/|g;
+    $class .= ".pm";
+
+    if ( !exists $::INC{$class} ) {
+        eval { require $class };
+        croak $@ if $@;
+    }
+
+    return;
+}
+
+
 
 
 1;  # Magic true value required at end of module
