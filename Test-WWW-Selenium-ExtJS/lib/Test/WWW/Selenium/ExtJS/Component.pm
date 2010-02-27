@@ -10,27 +10,6 @@ Readonly my $FALSE          => 0;
 Readonly my $ID_FUNCTION    => ".getId()";
 
 
-# # parent - proxy for the container Ext component
-# has 'parent' => (
-#     isa         => 'Test::WWW::Selenium::ExtJS::Component', 
-#     is          => 'ro',
-#     predicate   => 'has_parent',
-# );
-# 
-# # extjs - central extjs testing object
-# has 'extjs' => (
-#     isa         => 'Test::WWW::Selenium::ExtJS', 
-#     is          => 'rw', 
-#     predicate   => 'has_extjs',
-# );
-# 
-# # expression - JavaScript that evaluates to the Ext component
-# has 'expression' => (
-#     isa         => 'Str', 
-#     is          => 'rw', 
-#     predicate   => 'has_expression',
-# );
-# 
 # ext_id - id of the Ext component
 has 'ext_id' => (
     isa         => 'Str', 
@@ -68,11 +47,6 @@ has '_available' => (
 # Build component from given parameters
 sub BUILD {
     my ( $self, $params ) = @_;
-
-#     # Get the extjs object from the parent if given
-#     if ($self->has_parent && not $self->has_extjs) {
-#         $self->extjs( $self->parent->extjs );
-#     }
 
     # Build a expression from a given ext id
     if ($self->has_ext_id) {
@@ -308,32 +282,8 @@ L<http://www.extjs.com/deploy/dev/docs/?class=Ext.Component>
 
 =head2 Attributes
 
-=head3 C<parent>
-
-Type: C<Test::WWW::Selenium::ExtJS::Component> object.
-
-Proxy for the containing ExtJS component.
-
-We need either the L<parent> or the L<extjs> attribute to connect to the 
-selenium object.
-
-=head3 C<extjs>
-
-Type: C<Test::WWW::Selenium::ExtJS> object.
-
-The central ExtJS object.
-
-We need either the L<parent> or the L<extjs> attribute to connect to the 
-selenium object.
-
-=head3 C<expression>
-
-Type: C<Str>.
-
-The JavaScript expression that will be evaluated to access the ExtJS component
-in selenium.
-
-If L<expression> is not given, we need the L<id> attribute.
+The attributes of the base class are described at 
+L<Test::WWW::Selenium::ExtJS::Expression>.
 
 =head3 C<ext_id>
 
