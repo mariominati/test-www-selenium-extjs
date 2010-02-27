@@ -67,110 +67,40 @@ L<http://www.extjs.com/deploy/dev/docs/?class=Ext.layout.BorderLayout>
 
 =head1 INTERFACE 
 
+The attributes of the base class are described at 
+L<Test::WWW::Selenium::ExtJS::Expression>.
 
-###
-### rework from here
-###
-
-
-=head2 Attributes
-
-=head3 C<parent>
-
-Type: C<Test::WWW::Selenium::ExtJS::Component> object.
-
-Proxy for the containing ExtJS component.
-
-We need either the L<parent> or the L<extjs> attribute to connect to the 
-selenium object.
-
-=head3 C<extjs>
-
-Type: C<Test::WWW::Selenium::ExtJS> object.
-
-The central ExtJS object.
-
-We need either the L<parent> or the L<extjs> attribute to connect to the 
-selenium object.
-
-=head3 C<expression>
-
-Type: C<Str>.
-
-The JavaScript expression that will be evaluated to access the ExtJS component
-in selenium.
-
-If L<expression> is not given, we need the L<id> attribute.
-
-=head3 C<id>
-
-Type: C<Str>.
-
-Sets the id of the Ext component. This is usually used for windows, viewports
-and other objects with fixed id.
-
-If L<id> is not given, we need the L<expression> attribute.
-
-=head3 C<xtype>
-
-Type: C<Str>.
-
-The XType of the Ext component, default is 'component'.
 
 =head2 General methods
 
-=head3 C<get_id>
+The methods of the base class are described at 
+L<Test::WWW::Selenium::ExtJS::Expression>.
 
-Returns the ID of the Ext component, found with the proxy's JS expression. 
 
-=head3 C<get_xpath>
+=head3 C<get_north_panel_expression>
 
-Returns an XPath to the Ext component, which contains the ID provided 
-by L<get_id>.
+Returns the expression to access the panel of the north region of this border 
+layout. 
 
-=head3 C<get_expression>
+=head3 C<get_east_panel_expression>
 
-Returns the absolute expression that resolves this proxy's Ext component.
+Returns the expression to access the panel of the east region of this border 
+layout. 
 
-=head3 C<get_eval_on_component>
+=head3 C<get_south_panel_expression>
 
-Evaluates expression on this component.
+Returns the expression to access the panel of the south region of this border 
+layout. 
 
-=head2 Component methods to synchronise with AJAX
+=head3 C<get_west_panel_expression>
 
-=head3 C<wait_eval_on_component_true>
+Returns the expression to access the panel of the west region of this border 
+layout. 
 
-Waits until the expression for this component evals true, dies on timeout.
+=head3 C<get_center_panel_expression>
 
-=head2 Convenience methods to evaluate properties
-
-=head3 C<get_eval_component_string_property>
-
-Gets a property from the Ext component as string.
-
-=head3 C<get_eval_component_property_exists>
-
-Returns true if the requested property exists in the Ext component.
-
-=head3 C<get_eval_component_boolean_property>
-
-Gets a property from the Ext component as boolean value.
-If the property equals 'true' we return a true value.
-
-=head2 Methods to synchronise with AJAX
-
-=head3 C<wait_for_component>
-
-Does a wait loop until the component is available.
-
-=head3 C<wait_for_rendered>
-
-Does a wait loop until the component is rendered.
-
-=head3 C<is_enabled>
-
-Returns true if the 'disabled' property of the component is B<not> set,
-false otherwise.
+Returns the expression to access the panel of the center region of this border 
+layout. 
 
 
 =head1 DIAGNOSTICS
