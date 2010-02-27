@@ -409,6 +409,11 @@ The expression is evaluated in an anonymous javascript function:
         return $expression
     }).call( this.page().currentWindow );
 
+=head3 C<get_pure_eval>
+
+Same as L<get_eval>, but the C<return> statement must be included in the custom
+expression.
+
 =head2 Methods to synchronise with AJAX
 
 =head3 C<wait_eval_true>
@@ -418,6 +423,11 @@ Returns as soon as the expression evaluates true, else dies on timeout.
 =head3 C<wait_until_expression_resolves>
 
 Returns true as soon as expression evaluates, else false on timeout.
+
+=head3 C<wait_until_pure_expression_resolves>
+
+Same as L<wait_until_expression_resolves>, but the C<return> statement must be 
+included in the custom expression.
 
 =head3 C<wait_until_expression_not_resolves>
 
