@@ -2,13 +2,47 @@ package Test::WWW::Selenium::ExtJS::Layout::BorderLayout;
 
 use Moose;                                       # Includes strict and warnings
 
-# extends "Test::WWW::Selenium::ExtJS::Layout";
+extends "Test::WWW::Selenium::ExtJS::Layout";
 
 use Readonly;
 Readonly my $TRUE   => 1;
 Readonly my $FALSE  => 0;
 
-# get items object where region == north 
+
+sub get_north_panel_expression {
+    my $self = shift;
+
+    return $self->get_expression . ".layout.north.panel";
+}
+
+
+sub get_east_panel_expression {
+    my $self = shift;
+
+    return $self->get_expression . ".layout.east.panel";
+}
+
+
+sub get_south_panel_expression {
+    my $self = shift;
+
+    return $self->get_expression . ".layout.south.panel";
+}
+
+
+sub get_west_panel_expression {
+    my $self = shift;
+
+    return $self->get_expression . ".layout.west.panel";
+}
+
+
+sub get_center_panel_expression {
+    my $self = shift;
+
+    return $self->get_expression . ".layout.center.panel";
+}
+
 
 1;  # Magic true value required at end of module
 __END__
