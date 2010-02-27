@@ -40,11 +40,17 @@ sub BUILD {
     if ($self->has_parent && not $self->has_extjs) {
         $self->extjs( $self->parent->extjs );
     }
+};
 
 
 # Returns the absolute expression that resolves this proxy's Ext component.
 sub get_expression {
     my $self = shift;
+
+    return $self->has_parent 
+        ? $self->parent->get_expression() . $self->expression 
+        : $self->expression;
+}
 
 
 1; # Magic true value required at end of module
