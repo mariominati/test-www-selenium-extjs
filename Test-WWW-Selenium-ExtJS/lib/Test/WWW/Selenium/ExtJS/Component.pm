@@ -1,8 +1,8 @@
 package Test::WWW::Selenium::ExtJS::Component;
 
-use Test::WWW::Selenium::ExtJS;
-
 use Moose;                                       # Includes strict and warnings
+
+extends "Test::WWW::Selenium::ExtJS::Expression";
 
 use Readonly;
 Readonly my $TRUE           => 1;
@@ -10,27 +10,27 @@ Readonly my $FALSE          => 0;
 Readonly my $ID_FUNCTION    => ".getId()";
 
 
-# parent - proxy for the container Ext component
-has 'parent' => (
-    isa         => 'Test::WWW::Selenium::ExtJS::Component', 
-    is          => 'ro',
-    predicate   => 'has_parent',
-);
-
-# extjs - central extjs testing object
-has 'extjs' => (
-    isa         => 'Test::WWW::Selenium::ExtJS', 
-    is          => 'rw', 
-    predicate   => 'has_extjs',
-);
-
-# expression - JavaScript that evaluates to the Ext component
-has 'expression' => (
-    isa         => 'Str', 
-    is          => 'rw', 
-    predicate   => 'has_expression',
-);
-
+# # parent - proxy for the container Ext component
+# has 'parent' => (
+#     isa         => 'Test::WWW::Selenium::ExtJS::Component', 
+#     is          => 'ro',
+#     predicate   => 'has_parent',
+# );
+# 
+# # extjs - central extjs testing object
+# has 'extjs' => (
+#     isa         => 'Test::WWW::Selenium::ExtJS', 
+#     is          => 'rw', 
+#     predicate   => 'has_extjs',
+# );
+# 
+# # expression - JavaScript that evaluates to the Ext component
+# has 'expression' => (
+#     isa         => 'Str', 
+#     is          => 'rw', 
+#     predicate   => 'has_expression',
+# );
+# 
 # ext_id - id of the Ext component
 has 'ext_id' => (
     isa         => 'Str', 
@@ -69,10 +69,10 @@ has '_available' => (
 sub BUILD {
     my ( $self, $params ) = @_;
 
-    # Get the extjs object from the parent if given
-    if ($self->has_parent && not $self->has_extjs) {
-        $self->extjs( $self->parent->extjs );
-    }
+#     # Get the extjs object from the parent if given
+#     if ($self->has_parent && not $self->has_extjs) {
+#         $self->extjs( $self->parent->extjs );
+#     }
 
     # Build a expression from a given ext id
     if ($self->has_ext_id) {
