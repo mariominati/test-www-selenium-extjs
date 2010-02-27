@@ -310,6 +310,9 @@ The XType of the Ext component, default is 'component'.
 
 =head2 General methods
 
+The methods of the base class are described at 
+L<Test::WWW::Selenium::ExtJS::Expression>.
+
 =head3 C<get_id>
 
 Returns the ID of the Ext component, found with the proxy's JS expression. 
