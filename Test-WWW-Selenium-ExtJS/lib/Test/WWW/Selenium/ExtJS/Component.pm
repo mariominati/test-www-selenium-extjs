@@ -192,8 +192,17 @@ sub get_eval_component_boolean_property {
 }
 
 
+sub get_eval_component_integer_property {
+    my $self = shift;
+    my ($property) = @_;
+
+    my $result = $self->get_eval_component_string_property( $property );
+
+    return int( $result );
+}
+
+
 # TODO
-#     protected int getEvalIntegerProperty(String name) { ... }
 #     protected double getEvalDoubleProperty(String name) { ... }
 
 
@@ -350,6 +359,10 @@ Returns true if the requested property exists in the Ext component.
 
 Gets a property from the Ext component as boolean value.
 If the property equals 'true' we return a true value.
+
+=head3 C<get_eval_component_integer_property>
+
+Gets a property from the Ext component as an integer value.
 
 =head2 Methods to synchronise with AJAX
 
