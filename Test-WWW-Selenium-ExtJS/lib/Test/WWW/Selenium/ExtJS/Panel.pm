@@ -40,6 +40,14 @@ sub get_footer_toolbar {
     return new Test::WWW::Selenium::ExtJS::Panel::FooterToolbar( parent => $self );
 }
 
+# Returns the number of item objects in this panel
+
+sub get_eval_panel_items_count {
+    my $self = shift;
+
+    return $self->get_eval_component_integer_property( "items.items.length" );
+}
+
 
 1;  # Magic true value required at end of module
 __END__
@@ -91,6 +99,12 @@ Returns the toolbar object for the bottom toolbar.
 =head3 C<get_footer_toolbar>
 
 Returns the toolbar object for the footer toolbar. 
+
+=head2 Convenience methods to evaluate properties
+
+=head3 C<get_eval_panel_items_count>
+
+Returns the number of items in this panel.
 
 
 =head1 DIAGNOSTICS
