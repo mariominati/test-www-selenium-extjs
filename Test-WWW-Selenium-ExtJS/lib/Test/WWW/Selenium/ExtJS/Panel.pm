@@ -48,6 +48,15 @@ sub get_eval_panel_items_count {
     return $self->get_eval_component_integer_property( "items.items.length" );
 }
 
+# Gets the expression for a specific item of the panel
+
+sub get_item_by_index_expression {
+    my $self = shift;
+    my ($index) = @_;
+
+    return $self->get_expression . ".items.items[$index]";
+}
+
 
 1;  # Magic true value required at end of module
 __END__
