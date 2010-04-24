@@ -25,7 +25,26 @@ sub BUILD {
 }
 
 
-# Add specific methods here
+# Get the expressions for all buttongroups of this toolbar
+
+sub get_eval_buttongroup_expressions {
+    my $self = shift;
+    my @buttongroups = ();
+
+    return @buttongroups;
+}
+
+
+# Gets the expression for a specific buttongroup of the toolbar
+
+sub get_eval_buttongroup_by_index_expression {
+    my $self = shift;
+    my ($index) = @_;
+
+    my @buttongroups = $self->get_eval_buttongroup_expressions();
+
+    return $buttongroups[ $index ];
+}
 
 
 1;  # Magic true value required at end of module
