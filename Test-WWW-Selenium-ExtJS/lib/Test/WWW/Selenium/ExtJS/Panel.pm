@@ -115,6 +115,10 @@ Returns the toolbar object for the footer toolbar.
 
 Returns the number of items in this panel.
 
+=head3 C<get_item_by_index_expression>
+
+Gets the expression for the n-th item of this panel.
+
 
 =head1 DIAGNOSTICS
 
