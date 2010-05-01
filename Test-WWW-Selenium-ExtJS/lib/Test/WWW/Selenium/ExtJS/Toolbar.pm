@@ -25,6 +25,15 @@ sub BUILD {
 }
 
 
+# Returns the number of item objects in this toolbar
+
+sub get_eval_toolbar_items_count {
+    my $self = shift;
+
+    return $self->get_eval_component_integer_property( "items.items.length" );
+}
+
+
 # Get the expressions for all buttongroups of this toolbar
 
 sub get_eval_buttongroup_expressions {
