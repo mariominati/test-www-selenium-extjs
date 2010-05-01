@@ -29,7 +29,32 @@ sub BUILD {
 
 sub get_eval_buttongroup_expressions {
     my $self = shift;
-    my @buttongroups = ();
+
+    # Expression to access the toolbar items array
+    my $items_expression = $self->get_expression() . ".items.items";
+
+    # Create javascript code for analysing toolbar items
+    my $js = 
+        "var bg = new Array();".
+        "Ext.each( " . $items_expression . ", ". 
+        "    function( item, index ) {".
+        "        if (item.xtype && item.xtype == 'buttongroup') { ".
+        "            bg.push( index ); ".
+        "        } ".
+        "    } ".
+        "); ".
+        "return bg; ";
+ 
+    # Execute javascript code
+    my $buttongroup_indexes = $self->extjs->get_pure_eval( $js );
+# warn $buttongroup_indexes;
+
+    # Convert indexes into expressiions
+    my @buttongroups = 
+        map { $items_expression . '[' . $_ . ']' }
+        split( /,/, $buttongroup_indexes);
+# use Data::Dumper;
+# warn Dumper( \@buttongroups );
 
     return @buttongroups;
 }
