@@ -27,7 +27,7 @@ sub BUILD {
 
 # Returns the number of item objects in this toolbar
 
-sub get_eval_toolbar_items_count {
+sub get_eval_items_count {
     my $self = shift;
 
     return $self->get_eval_component_integer_property( "items.items.length" );
@@ -124,7 +124,7 @@ L<Test::WWW::Selenium::ExtJS::Container>.
 
 =head2 Convenience methods to evaluate properties
 
-=head3 C<get_eval_toolbar_items_count>
+=head3 C<get_eval_items_count>
 
 Returns the number of items in this toolbar.
 

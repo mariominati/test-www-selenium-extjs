@@ -42,7 +42,7 @@ sub get_footer_toolbar {
 
 # Returns the number of item objects in this panel
 
-sub get_eval_panel_items_count {
+sub get_eval_items_count {
     my $self = shift;
 
     return $self->get_eval_component_integer_property( "items.items.length" );
@@ -111,7 +111,7 @@ Returns the toolbar object for the footer toolbar.
 
 =head2 Convenience methods to evaluate properties
 
-=head3 C<get_eval_panel_items_count>
+=head3 C<get_eval_items_count>
 
 Returns the number of items in this panel.
 
