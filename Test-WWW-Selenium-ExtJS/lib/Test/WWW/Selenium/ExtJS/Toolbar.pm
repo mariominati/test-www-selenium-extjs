@@ -122,6 +122,20 @@ The XType of the Ext component, default is 'toolbar'.
 The methods of the base class are described at 
 L<Test::WWW::Selenium::ExtJS::Container>.
 
+=head2 Convenience methods to evaluate properties
+
+=head3 C<get_eval_toolbar_items_count>
+
+Returns the number of items in this toolbar.
+
+=head3 C<get_eval_buttongroup_expressions>
+
+Gets all expressions for the buttongroups of this toolbar as list.
+
+=head3 C<get_eval_buttongroup_by_index_expression>
+
+Gets the expression for the n-th buttongroup.
+
 
 =head1 DIAGNOSTICS
 
