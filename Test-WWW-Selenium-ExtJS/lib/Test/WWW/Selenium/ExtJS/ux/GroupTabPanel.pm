@@ -2,7 +2,7 @@ package Test::WWW::Selenium::ExtJS::ux::GroupTabPanel;
 
 use Moose;                                       # Includes strict and warnings
 
-extends "Test::WWW::Selenium::ExtJS::Panel";
+extends "Test::WWW::Selenium::ExtJS::TabPanel";
 
 use Readonly;
 Readonly my $TRUE       => 1;
