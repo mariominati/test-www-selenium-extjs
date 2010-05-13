@@ -12,7 +12,7 @@ Readonly my $FALSE  => 0;
 sub get_eval_cards_count{
     my $self = shift;
 
-#     return $self->get_expression . ".layout.north.panel";
+    return $self->get_eval_integer_property( "layout.container.items.items.length" );
 }
 
 
