@@ -26,7 +26,6 @@ sub get_title {
         $self->get_xpath() . 
         "//span[contains(\@class, 'x-window-header-text')]" 
     );
-#     return $self->get_eval_on_component( ".title;" );
 }
 
 
