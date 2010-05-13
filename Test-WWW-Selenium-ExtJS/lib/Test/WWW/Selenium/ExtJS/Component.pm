@@ -128,16 +128,6 @@ sub get_expression {
         : $self->expression;
 }
 
-# Immediately evaluates expression on this component.
-sub get_eval_on_component {
-    my $self = shift;
-    my $expression = shift;
-
-    my $componentExpression = $self->get_expression() . $expression;
-
-    return $self->extjs->get_eval( $componentExpression );
-}
-
 
 ###
 ###   Component methods to synchronise with AJAX
@@ -154,56 +144,6 @@ sub wait_eval_on_component_true {
 
     return $self->extjs->wait_eval_true( $componentExpression, $timeout );
 }
-
-
-###
-###   Convenience methods to evaluate properties of the Ext component
-###
-
-
-sub get_eval_component_string_property {
-    my $self = shift;
-    my ($property) = @_;
-
-    return $self->get_eval_on_component( ".$property;" );
-}
-
-
-sub get_eval_component_property_exists {
-    my $self = shift;
-    my ($property) = @_;
-
-    my $result = $self->get_eval_component_string_property( $property );
-
-# TODO - check results
-die $result;
-
-    return ($result eq 'null');
-}
-
-
-sub get_eval_component_boolean_property {
-    my $self = shift;
-    my ($property) = @_;
-
-    my $result = $self->get_eval_component_string_property( $property );
-
-    return ( $result eq "true" ? $TRUE : $FALSE );
-}
-
-
-sub get_eval_component_integer_property {
-    my $self = shift;
-    my ($property) = @_;
-
-    my $result = $self->get_eval_component_string_property( $property );
-
-    return int( $result );
-}
-
-
-# TODO
-#     protected double getEvalDoubleProperty(String name) { ... }
 
 
 ###
@@ -262,7 +202,7 @@ sub wait_for_component_rendered {
 sub is_enabled {
     my $self = shift;
 
-    return ( ! $self->get_eval_component_boolean_property( "disabled" ));
+    return ( ! $self->get_eval_boolean_property( "disabled" ));
 }
 
 
@@ -335,34 +275,11 @@ by L<get_id>.
 
 Returns the absolute expression that resolves this proxy's Ext component.
 
-=head3 C<get_eval_on_component>
-
-Evaluates expression on this component.
-
 =head2 Component methods to synchronise with AJAX
 
 =head3 C<wait_eval_on_component_true>
 
 Waits until the expression for this component evals true, dies on timeout.
-
-=head2 Convenience methods to evaluate properties
-
-=head3 C<get_eval_component_string_property>
-
-Gets a property from the Ext component as string.
-
-=head3 C<get_eval_component_property_exists>
-
-Returns true if the requested property exists in the Ext component.
-
-=head3 C<get_eval_component_boolean_property>
-
-Gets a property from the Ext component as boolean value.
-If the property equals 'true' we return a true value.
-
-=head3 C<get_eval_component_integer_property>
-
-Gets a property from the Ext component as an integer value.
 
 =head2 Methods to synchronise with AJAX
 

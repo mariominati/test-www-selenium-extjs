@@ -45,7 +45,7 @@ sub get_footer_toolbar {
 sub get_eval_items_count {
     my $self = shift;
 
-    return $self->get_eval_component_integer_property( "items.items.length" );
+    return $self->get_eval_integer_property( "items.items.length" );
 }
 
 # Gets the expression for a specific item of the panel

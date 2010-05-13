@@ -52,6 +52,66 @@ sub get_expression {
         : $self->expression;
 }
 
+# Immediately evaluates expression on this component / layout.
+sub get_eval {
+    my $self = shift;
+    my $expression = shift;
+
+    my $composed_expression = $self->get_expression() . $expression;
+
+    return $self->extjs->get_eval( $composed_expression );
+}
+
+
+###
+###   Convenience methods to evaluate properties of the Ext component
+###
+
+
+sub get_eval_string_property {
+    my $self = shift;
+    my ($property) = @_;
+
+    return $self->get_eval( ".$property;" );
+}
+
+
+sub get_eval_property_exists {
+    my $self = shift;
+    my ($property) = @_;
+
+    my $result = $self->get_eval_string_property( $property );
+
+# TODO - check results
+die $result;
+
+    return ($result eq 'null');
+}
+
+
+sub get_eval_boolean_property {
+    my $self = shift;
+    my ($property) = @_;
+
+    my $result = $self->get_eval_string_property( $property );
+
+    return ( $result eq "true" ? $TRUE : $FALSE );
+}
+
+
+sub get_eval_integer_property {
+    my $self = shift;
+    my ($property) = @_;
+
+    my $result = $self->get_eval_string_property( $property );
+
+    return int( $result );
+}
+
+
+# TODO
+#     protected double getEvalDoubleProperty(String name) { ... }
+
 
 1; # Magic true value required at end of module
 __END__
@@ -111,6 +171,29 @@ If L<expression> is not given, we need the L<id> attribute.
 =head3 C<get_expression>
 
 Returns the absolute expression that resolves this proxy's Ext component.
+
+=head3 C<get_eval>
+
+Evaluates expression on this element (component/layout).
+
+=head2 Convenience methods to evaluate properties
+
+=head3 C<get_eval_string_property>
+
+Gets a property from the Ext component/layout as string.
+
+=head3 C<get_eval_property_exists>
+
+Returns true if the requested property exists in the Ext component/layout.
+
+=head3 C<get_eval_boolean_property>
+
+Gets a property from the Ext component/layout as boolean value.
+If the property equals 'true' we return a true value.
+
+=head3 C<get_eval_integer_property>
+
+Gets a property from the Ext component/layout as an integer value.
 
 
 =head1 DIAGNOSTICS
