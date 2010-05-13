@@ -16,32 +16,39 @@ sub get_eval_cards_count{
 }
 
 
-sub get_eval_current_index {
+sub get_eval_active_index {
     my $self = shift;
 
-#     return $self->get_expression . ".layout.east.panel";
+    # Expression to access the toolbar items array
+    my $items_expression = $self->get_expression() . ".layout.container.items.items";
+    my $activeItem_expression = $self->get_expression() . ".layout.activeItem";
+
+    # Create javascript code for analysing toolbar items
+    my $js = 
+        "var activeItem = $activeItem_expression;".
+        "Ext.each( " . $items_expression . ", ". 
+        "    function( item, index ) {".
+        "        if (item == activeItem) { ".
+        "            return index; ".
+        "        } ".
+        "    } ".
+        "); ".
+        "return -1; ";
+warn $js;
+ 
+    # Execute javascript code
+    my $active_index = $self->extjs->get_pure_eval( $js );
+
+    return $active_index;
 }
 
 
 sub get_card_by_index {
     my $self = shift;
+    my $index = shift;
 
-#     return $self->get_expression . ".layout.south.panel";
+    return $self->get_expression() . ".layout.container.items.items[" . $index . "]";
 }
-
-
-# sub get_west_panel_expression {
-#     my $self = shift;
-# 
-#     return $self->get_expression . ".layout.west.panel";
-# }
-# 
-# 
-# sub get_center_panel_expression {
-#     my $self = shift;
-# 
-#     return $self->get_expression . ".layout.center.panel";
-# }
 
 
 1;  # Magic true value required at end of module
