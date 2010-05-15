@@ -34,7 +34,7 @@ sub get_eval_active_index {
         "    } ".
         "); ".
         "return -1; ";
-warn $js;
+# warn $js;
  
     # Execute javascript code
     my $active_index = $self->extjs->get_pure_eval( $js );
@@ -43,7 +43,7 @@ warn $js;
 }
 
 
-sub get_card_by_index {
+sub get_card_expression_by_index {
     my $self = shift;
     my $index = shift;
 
@@ -84,30 +84,18 @@ The methods of the base class are described at
 L<Test::WWW::Selenium::ExtJS::Expression>.
 
 
-=head3 C<get_north_panel_expression>
+=head3 C<get_eval_cards_count>
 
-Returns the expression to access the panel of the north region of this border 
-layout. 
+Returns the number of cards of this layout. 
 
-=head3 C<get_east_panel_expression>
+=head3 C<get_eval_active_index>
 
-Returns the expression to access the panel of the east region of this border 
-layout. 
+Returns the index of the current active layout card, counting starts by 0. 
 
-=head3 C<get_south_panel_expression>
+=head3 C<get_card_expression_by_index>
 
-Returns the expression to access the panel of the south region of this border 
-layout. 
-
-=head3 C<get_west_panel_expression>
-
-Returns the expression to access the panel of the west region of this border 
-layout. 
-
-=head3 C<get_center_panel_expression>
-
-Returns the expression to access the panel of the center region of this border 
-layout. 
+Returns the expression to access the component/panel of the card layout given 
+by index, counting starts by 0. 
 
 
 =head1 DIAGNOSTICS
