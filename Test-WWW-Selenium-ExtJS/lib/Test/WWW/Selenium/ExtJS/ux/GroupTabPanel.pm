@@ -14,6 +14,29 @@ has '+xtype' => (
     default => 'grouptabpanel',
 );
 
+# In GroupTabPanel each *group* has its own card, 
+# Each group card contains another card layout for the tabs of the group.
+
+# grouptabpanel consists of two elements the body and the header, the body contains the cards from cardlayout, the header contains the labels
+
+
+# count groups and tabs in groups, name groups, etc. create existance checking methods
+
+
+# Returns the number of tab groups in this group panel
+
+sub get_eval_groups_count {
+    my $self = shift;
+
+    # Get layout of the panel
+    my $layout = $self->get_layout();
+
+    # Get card count
+    my $card_count = $layout->get_eval_cards_count();
+
+    return $card_count;
+}
+
 
 # # Check window title
 # 
