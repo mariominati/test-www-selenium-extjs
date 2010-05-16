@@ -43,11 +43,11 @@ sub get_eval_groups_count {
 sub get_eval_active_group_index {
     my $self = shift;
 
-    # Expression to access the toolbar items array
+    # Expression to access the grouptabpanel items array
     my $items_expression = $self->get_expression() . ".layout.container.items.items";
     my $activeGroup_expression = $self->get_expression() . ".activeGroup";
 
-    # Create javascript code for analysing toolbar items
+    # Create javascript code for analysing grouptabpanel items
     my $js = 
         "var retVal = -1, activeGroup = $activeGroup_expression;".
         "Ext.each( " . $items_expression . ", ". 
@@ -76,6 +76,61 @@ sub get_eval_groupname_by_index {
     return $self->get_eval_string_property(
         "layout.container.items.items[" . $index . "].groupName"
     );
+}
+
+
+# Returns the index for the given group name
+
+sub get_eval_group_index_by_name {
+    my $self = shift;
+    my $name = shift;
+
+    # Expression to access the grouptabpanel items array
+    my $items_expression = $self->get_expression() . ".layout.container.items.items";
+
+    # Create javascript code for analysing toolbar items
+    my $js = 
+        "var retVal = -1;".
+        "Ext.each( " . $items_expression . ", ". 
+        "    function( item, index ) {".
+        "        if (item.groupName == '$name') { ".
+        "            retVal = index; ".
+        "        } ".
+        "    } ".
+        "); ".
+        "return retVal; ";
+# warn $js;
+ 
+    # Execute javascript code
+    my $group_index = $self->extjs->get_pure_eval( $js );
+# warn $group_index;
+
+    return $group_index;
+}
+
+
+# Returns true if a group with the given name exists
+
+sub get_eval_group_exists {
+    my $self = shift;
+    my $name = shift;
+
+    my $index = $self->get_eval_group_index_by_name( $name );
+
+    return ($index == -1) ? $FALSE : $TRUE;
+}
+
+
+# Returns true if a group with the given name is the active group
+
+sub get_eval_group_is_active {
+    my $self = shift;
+    my $name = shift;
+
+    my $index = $self->get_eval_group_index_by_name( $name );
+    my $active = $self->get_eval_active_group_index();
+
+    return ($index != -1 && $index == $active) ? $TRUE : $FALSE;
 }
 
 
