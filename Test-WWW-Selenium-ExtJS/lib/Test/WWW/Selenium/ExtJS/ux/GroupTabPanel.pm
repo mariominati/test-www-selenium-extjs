@@ -187,9 +187,29 @@ The XType of the Ext component, default is 'window'.
 The methods of the base class are described at 
 L<Test::WWW::Selenium::ExtJS::Panel>.
 
-=head3 C<get_title>
+=head3 C<get_eval_groups_count>
 
-Returns the title of the window.
+Returns the number of tab groups in this group panel.
+
+=head3 C<get_eval_active_group_index>
+
+Returns the index of the active group, starting by 0.
+
+=head3 C<get_eval_groupname_by_index>
+
+Returns the name of the given group.
+
+=head3 C<get_eval_group_index_by_name>
+
+Returns the index for the given group name.
+
+=head3 C<get_eval_group_exists>
+
+Returns true if a group with the given name exists.
+
+=head3 C<get_eval_group_is_active>
+
+Returns true if a group with the given name is the active group.
 
 
 =head1 DIAGNOSTICS
