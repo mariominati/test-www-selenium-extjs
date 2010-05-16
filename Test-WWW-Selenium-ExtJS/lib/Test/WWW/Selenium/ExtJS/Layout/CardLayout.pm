@@ -25,15 +25,15 @@ sub get_eval_active_index {
 
     # Create javascript code for analysing toolbar items
     my $js = 
-        "var activeItem = $activeItem_expression;".
+        "var retVal = -1, activeItem = $activeItem_expression;".
         "Ext.each( " . $items_expression . ", ". 
         "    function( item, index ) {".
         "        if (item == activeItem) { ".
-        "            return index; ".
+        "            retVal = index; ".
         "        } ".
         "    } ".
         "); ".
-        "return -1; ";
+        "return retVal; ";
 # warn $js;
  
     # Execute javascript code
