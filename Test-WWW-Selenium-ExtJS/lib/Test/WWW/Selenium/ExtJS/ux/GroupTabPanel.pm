@@ -38,6 +38,47 @@ sub get_eval_groups_count {
 }
 
 
+# Returns the index of the active group
+
+sub get_eval_active_group_index {
+    my $self = shift;
+
+    # Expression to access the toolbar items array
+    my $items_expression = $self->get_expression() . ".layout.container.items.items";
+    my $activeGroup_expression = $self->get_expression() . ".activeGroup";
+
+    # Create javascript code for analysing toolbar items
+    my $js = 
+        "var retVal = -1, activeGroup = $activeGroup_expression;".
+        "Ext.each( " . $items_expression . ", ". 
+        "    function( item, index ) {".
+        "        if (item == activeGroup) { ".
+        "            retVal = index; ".
+        "        } ".
+        "    } ".
+        "); ".
+        "return retVal; ";
+# warn $js;
+ 
+    # Execute javascript code
+    my $active_group = $self->extjs->get_pure_eval( $js );
+
+    return $active_group;
+}
+
+
+# Returns the name of the given group
+
+sub get_eval_groupname_by_index {
+    my $self = shift;
+    my $index = shift;
+
+    return $self->get_eval_string_property(
+        "layout.container.items.items[" . $index . "].groupName"
+    );
+}
+
+
 # # Check window title
 # 
 # sub get_title {
