@@ -118,8 +118,12 @@ sub get_pure_eval {
         $self->_js_preserve_window_objects_string .
         $expression .
         "}).call( this.page().currentWindow );";
+# warn "get_pure_eval: ". $anonymous_function;
 
-    return $self->selenium->get_eval( $anonymous_function );
+    my $ret_val = $self->selenium->get_eval( $anonymous_function );
+# warn $ret_val;
+
+    return $ret_val;
 }
 
 
