@@ -14,13 +14,13 @@ has '+xtype' => (
     default => 'grouptabpanel',
 );
 
+
 # In GroupTabPanel each *group* has its own card, 
 # Each group card contains another card layout for the tabs of the group.
 
-# grouptabpanel consists of two elements the body and the header, the body contains the cards from cardlayout, the header contains the labels
-
-
-# count groups and tabs in groups, name groups, etc. create existance checking methods
+# The GroupTabPanel consists of two elements: body and header, 
+# The body contains the cards from CardLayout, 
+# The header contains the labels.
 
 
 # Returns the number of tab groups in this group panel
@@ -134,6 +134,32 @@ sub get_eval_group_is_active {
 }
 
 
+# Returns the number of tabs in the given group
+
+sub get_eval_tab_count_for_group {
+    my $self = shift;
+    my $id = shift;
+
+    # Get group index if a groupname i given
+    if ($id !~ /^[+-]?\d+$/) {
+        $id = $self->get_eval_group_index_by_name( $id );
+    }
+
+    # Build group expression
+    my $group_expression = 
+        $self->get_expression() . 
+        ".layout.container.items.items[" . $id . "]";
+
+    # Get tab count for group
+    my $tab_count = $self->get_eval_integer_property( 
+        "layout.container.items.items[" . $id . "]" .
+        ".items.items.length" 
+    );
+# warn $tab_count;
+    return $tab_count;
+}
+
+
 # # Check window title
 # 
 # sub get_title {
@@ -211,10 +237,15 @@ Returns true if a group with the given name exists.
 
 Returns true if a group with the given name is the active group.
 
+=head3 C<get_eval_tab_count_for_group>
+
+Returns the number of tabs in the given group.
+The function expects the index or name of the group.
 
 =head1 DIAGNOSTICS
 
-Look at L<Test::WWW::Selenium::ExtJS::Panel>.
+The errors of the base class are described at 
+L<Test::WWW::Selenium::ExtJS::TabPanel>.
 
 
 =head1 CONFIGURATION AND ENVIRONMENT
