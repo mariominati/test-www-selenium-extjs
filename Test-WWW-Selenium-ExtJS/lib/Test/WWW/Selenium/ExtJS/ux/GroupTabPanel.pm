@@ -212,18 +212,52 @@ sub get_eval_tab_title_exists_for_group {
 }
 
 
-# # Check window title
-# 
-# sub get_title {
-#     my $self = shift;
-# 
+# Returns an XPath to the header of the tab. The header is placed in a separate 
+# div of the grouptabpanel, so we need to write a special access method.
+
+sub get_eval_tab_header_xpath_by_tab_and_group {
+    my $self = shift;
+    my $tab_id = shift;
+    my $group_id = shift;
+
+    # Get group index if a groupname is given
+    if ($group_id !~ /^[+-]?\d+$/) {
+        $group_id = $self->get_eval_group_index_by_name( $group_id );
+    }
+
+    my $tab_item_expression = 
+        $self->get_expression() . 
+        ".layout.container.items.items[" . $group_id . "]" .
+        ".items.items[" . $tab_id . "]";
+
+    my $html_id = 
+        $self->extjs->get_eval( $tab_item_expression . ".tabEl.id" );
+# warn $html_id;
+
+    return 
+        "//*[\@id='" . $html_id . "']";
+}
+
+
+# Get the tab title
+
+sub get_tab_title_by_tab_and_group {
+    my $self = shift;
+    my $tab_id = shift;
+    my $group_id = shift;
+
 #     $self->wait_for_component_rendered;
-# 
-#     return $self->extjs->selenium->get_text ( 
-#         $self->get_xpath() . 
-#         "//span[contains(\@class, 'x-window-header-text')]" 
-#     );
-# }
+
+    # Get xpath
+    my $xpath = 
+        $self->get_eval_tab_header_xpath_by_tab_and_group( $tab_id, $group_id );
+
+    # Get HTML content
+    return $self->extjs->selenium->get_text ( 
+        $xpath . 
+        "//a[contains(\@class, 'x-grouptabs-text')]" 
+    );
+}
 
 
 1;  # Magic true value required at end of module
@@ -301,6 +335,15 @@ Gets the index of a tab in a given group. The tab is defined by it's title.
 =head3 C<get_eval_tab_title_exists_for_group>
 
 Checks if a tab, defined by a given title, exists in a given group.
+
+=head3 C<get_eval_tab_header_xpath_by_tab_and_group>
+
+Returns an XPath to the header of the tab.
+
+=head3 C<get_tab_title_by_tab_and_group>
+
+Get the tab title.
+
 
 =head1 DIAGNOSTICS
 
