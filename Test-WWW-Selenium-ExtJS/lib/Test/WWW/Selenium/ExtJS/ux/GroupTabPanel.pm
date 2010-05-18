@@ -140,7 +140,7 @@ sub get_eval_tab_count_for_group {
     my $self = shift;
     my $id = shift;
 
-    # Get group index if a groupname i given
+    # Get group index if a groupname is given
     if ($id !~ /^[+-]?\d+$/) {
         $id = $self->get_eval_group_index_by_name( $id );
     }
@@ -157,6 +157,58 @@ sub get_eval_tab_count_for_group {
     );
 # warn $tab_count;
     return $tab_count;
+}
+
+
+# Gets the index of a tab in a given group. The tab is defined by it's title.
+
+sub get_eval_tab_title_index_for_group {
+    my $self = shift;
+    my $title = shift;
+    my $group = shift;
+
+    # Get group index if a groupname is given
+    if ($group !~ /^[+-]?\d+$/) {
+        $group = $self->get_eval_group_index_by_name( $group );
+    }
+
+    # Expression to access the grouptabpanel items array
+    my $tab_items_expression = 
+        $self->get_expression() . 
+        ".layout.container.items.items[" . $group . "]" .
+        ".items.items";
+
+    # Create javascript code for analysing toolbar items
+    my $js = 
+        "var retVal = -1;".
+        "Ext.each( " . $tab_items_expression . ", ". 
+        "    function( item, index ) {".
+        "        if (item.title == '$title') { ".
+        "            retVal = index; ".
+        "        } ".
+        "    } ".
+        "); ".
+        "return retVal; ";
+# warn $js;
+ 
+    # Execute javascript code
+    my $tab_index = $self->extjs->get_pure_eval( $js );
+# warn $tab_index;
+
+    return $tab_index;
+}
+
+
+# Checks if a tab, defined by a given title, exists in a given group.
+
+sub get_eval_tab_title_exists_for_group {
+    my $self = shift;
+    my $title = shift;
+    my $group = shift;
+
+    my $index = $self->get_eval_tab_title_index_for_group( $title, $group );
+
+    return ($index == -1) ? $FALSE : $TRUE;
 }
 
 
@@ -241,6 +293,14 @@ Returns true if a group with the given name is the active group.
 
 Returns the number of tabs in the given group.
 The function expects the index or name of the group.
+
+=head3 C<get_eval_tab_title_index_for_group>
+
+Gets the index of a tab in a given group. The tab is defined by it's title.
+
+=head3 C<get_eval_tab_title_exists_for_group>
+
+Checks if a tab, defined by a given title, exists in a given group.
 
 =head1 DIAGNOSTICS
 
