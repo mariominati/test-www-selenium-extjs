@@ -260,6 +260,28 @@ sub get_tab_title_by_tab_and_group {
 }
 
 
+# Returns the expression to access a tab panel object.
+
+sub get_tab_panel_expression_by_tab_and_group {
+    my $self = shift;
+    my $tab_id = shift;
+    my $group_id = shift;
+
+    # Get group index if a groupname is given
+    if ($group_id !~ /^[+-]?\d+$/) {
+        $group_id = $self->get_eval_group_index_by_name( $group_id );
+    }
+
+    my $tab_expression = 
+        $self->get_expression() . 
+        ".layout.container.items.items[" . $group_id . "]" .
+        ".items.items[" . $tab_id . "]";
+# warn $tab_expression;
+
+    return $tab_expression;
+}
+
+
 1;  # Magic true value required at end of module
 __END__
 
@@ -343,6 +365,10 @@ Returns an XPath to the header of the tab.
 =head3 C<get_tab_title_by_tab_and_group>
 
 Get the tab title.
+
+=head3 C<get_tab_panel_expression_by_tab_and_group>
+
+Returns the expression to access a tab panel object.
 
 
 =head1 DIAGNOSTICS
