@@ -187,6 +187,7 @@ sub wait_for_component_rendered {
         $component_expression . ' && ' .
         $component_expression . '.rendered ) ? true : false)';
 
+# warn $expression;
     # Wait until the page has been loaded
     $self->extjs->wait_eval_true( $expression );
 
