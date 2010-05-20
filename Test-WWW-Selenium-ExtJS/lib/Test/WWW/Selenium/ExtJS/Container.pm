@@ -69,6 +69,8 @@ sub get_layout {
         map { (values %$_)[0] } 
         grep { (keys %$_)[0] eq lc ($layout) } 
         @$LAYOUT_PROXIES;
+    $layout_proxy_name = 'Auto'
+        if ('auto' eq lc ($layout));
     die "layout has not been defined"
         if not $layout_proxy_name;
     my $layout_proxy_classname = 
@@ -109,6 +111,7 @@ sub _autodetect_layout {
 
     # get name of layout
     my $result = $self->extjs->selenium->get_eval( $layoutExpression );
+# warn $result;
     return $result;
 }
 
