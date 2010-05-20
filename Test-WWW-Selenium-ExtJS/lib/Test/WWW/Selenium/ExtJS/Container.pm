@@ -69,7 +69,7 @@ sub get_layout {
         map { (values %$_)[0] } 
         grep { (keys %$_)[0] eq lc ($layout) } 
         @$LAYOUT_PROXIES;
-    $layout_proxy_name = 'Auto'
+    $layout_proxy_name = 'AutoLayout'
         if ('auto' eq lc ($layout));
     die "layout has not been defined"
         if not $layout_proxy_name;
