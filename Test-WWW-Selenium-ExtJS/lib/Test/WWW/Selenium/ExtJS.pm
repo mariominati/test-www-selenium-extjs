@@ -57,6 +57,21 @@ has 'looptime' => (
     default     => 500,
 );
 
+# stash - a stash to store any kind of object for later access
+has 'stash' => (
+    traits  => ['Hash'],
+    is      => 'rw',
+    isa     => 'HashRef[Defined]',
+    default => sub { {} },
+    handles => {
+        set_stash           => 'set',
+        get_stash           => 'get',
+        has_no_stash        => 'is_empty',
+        num_stash           => 'count',
+        delete_from_stash   => 'delete',
+        stash_pairs         => 'kv',
+    },
+);
 
 ### Private attributes
 
