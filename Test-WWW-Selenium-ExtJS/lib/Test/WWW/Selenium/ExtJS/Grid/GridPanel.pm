@@ -64,6 +64,21 @@ sub has_numberer_column {
 }
 
 
+sub get_column_title {
+    my $self = shift;
+    my $index = shift;                                    # index starts with 1
+
+    my $xpath =
+        $self->get_xpath() .
+        "//div[\@class='x-grid3-header']" . 
+        "//tr[\@class='x-grid3-hd-row']" .
+        "/td[$index]" .
+        "//div[contains(\@class, 'x-grid3-hd-inner')]";
+
+    return $self->extjs->selenium->get_text( $xpath );
+}
+
+
 # # Check window title
 # 
 # sub get_title {
