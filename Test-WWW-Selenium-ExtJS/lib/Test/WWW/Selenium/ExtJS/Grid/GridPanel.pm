@@ -70,7 +70,7 @@ sub get_column_title {
 
     my $xpath =
         $self->get_xpath() .
-        "//div[\@class='x-grid3-header']" . 
+        "//div[contains(\@class, 'x-grid3-header')]" . 
         "//tr[\@class='x-grid3-hd-row']" .
         "/td[$index]" .
         "//div[contains(\@class, 'x-grid3-hd-inner')]";
@@ -83,30 +83,23 @@ sub is_checkbox_column {
     my $self = shift;
     my $index = shift;                                    # index starts with 1
 
-#     my $xpath =
-#         $self->get_xpath() .
-#         "//div[\@class='x-grid3-header']" . 
-#         "//tr[\@class='x-grid3-hd-row']" .
-#         "/td[$index]" .
-#         "//div[contains(\@class, 'x-grid3-hd-inner')]";
-# 
-#     return $self->extjs->selenium->get_text( $xpath );
-    return $FALSE;
+    my $xpath =
+        $self->get_xpath() .
+        "//div[contains(\@class, 'x-grid3-scroller')]" . 
+        "//div[contains(\@class, 'x-grid3-row-first')]" .
+        "//td[$index]";
+
+    # get class attribute and cancel if we could not get it
+    my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
+    return $FALSE
+        if not defined $attribute;
+
+    # check for checkbox specific class
+    return 
+        ($attribute =~ m/x-grid3-check-col-td/)
+        ? $TRUE
+        : $FALSE;
 }
-
-
-# # Check window title
-# 
-# sub get_title {
-#     my $self = shift;
-# 
-#     $self->wait_for_component_rendered;
-# 
-#     return $self->extjs->selenium->get_text ( 
-#         $self->get_xpath() . 
-#         "//span[contains(\@class, 'x-window-header-text')]" 
-#     );
-# }
 
 
 1;  # Magic true value required at end of module
