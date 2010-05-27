@@ -79,6 +79,18 @@ sub get_column_title {
 }
 
 
+sub get_row_count {
+    my $self = shift;
+
+    my $xpath =
+        $self->get_xpath() .
+        "//div[contains(\@class, 'x-grid3-scroller')]" . 
+        "//div[contains(\@class, 'x-grid3-row')]";
+
+    return $self->extjs->selenium->get_xpath_count( $xpath );
+}
+
+
 sub is_checkbox_column {
     my $self = shift;
     my $index = shift;                                    # index starts with 1
