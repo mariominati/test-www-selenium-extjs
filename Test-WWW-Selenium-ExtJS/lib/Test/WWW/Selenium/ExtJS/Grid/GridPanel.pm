@@ -114,6 +114,48 @@ sub is_checkbox_column {
 }
 
 
+sub get_value {
+    my $self = shift;
+    my $row = shift;                                      # index starts with 1
+    my $column = shift;                                   # index starts with 1
+
+    my $xpath =
+        $self->get_xpath() .
+        "//div[contains(\@class, 'x-grid3-scroller')]" . 
+        "//div[contains(\@class, 'x-grid3-row')][$row]" .
+        "//td[$column]" .
+        "//div[contains(\@class, 'x-grid3-cell-inner')]";
+
+    return $self->extjs->selenium->get_text( $xpath );
+}
+
+
+sub get_checkbox_value {
+    my $self = shift;
+    my $row = shift;                                      # index starts with 1
+    my $column = shift;                                   # index starts with 1
+
+    my $xpath =
+        $self->get_xpath() .
+        "//div[contains(\@class, 'x-grid3-scroller')]" . 
+        "//div[contains(\@class, 'x-grid3-row')][$row]" .
+        "//td[$column]" .
+        "//div[contains(\@class, 'x-grid3-cell-inner')]" .
+        "/div";
+
+    # get class attribute and cancel if we could not get it
+    my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
+    return
+        if not defined $attribute;
+
+    # check for checkbox specific class
+    return 
+        ($attribute =~ m/x-grid3-check-col-on/)
+        ? $TRUE
+        : $FALSE;
+}
+
+
 1;  # Magic true value required at end of module
 __END__
 
