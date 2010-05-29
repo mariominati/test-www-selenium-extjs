@@ -165,7 +165,6 @@ sub is_column_hidden {
         "//div[\@class='x-grid3-header']" . 
         "//tr[\@class='x-grid3-hd-row']" .
         "//td[$index]";
-#         "/td[contains(\@style, 'display: none')]";
 
     # get style attribute and cancel if we could not get it
     my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@style' );
@@ -175,6 +174,36 @@ sub is_column_hidden {
     # check for hidden style
     return 
         ($attribute =~ m/display: none/)
+        ? $TRUE
+        : $FALSE;
+}
+
+
+sub has_column_header_menu {
+    my $self = shift;
+    my $index = shift;                                    # index starts with 1
+
+    # column must be visible
+    return $FALSE
+        if $self->is_column_hidden( $index );
+
+    # mouseover the column header
+    my $xpath =
+        $self->get_xpath() .
+        "//div[\@class='x-grid3-header']" . 
+        "//tr[\@class='x-grid3-hd-row']" .
+        "//td[$index]";
+    $self->extjs->selenium->mouse_over_ok( $xpath );
+
+    # get class attribute and cancel if we could not get it
+    my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
+    return $FALSE
+        if not defined $attribute;
+
+    # check for hover class, which is added when a menu can be shown and 
+    # the header is hovered
+    return 
+        ($attribute =~ m/x-grid3-hd-over/)
         ? $TRUE
         : $FALSE;
 }
