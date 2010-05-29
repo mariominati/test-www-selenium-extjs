@@ -156,6 +156,30 @@ sub get_checkbox_value {
 }
 
 
+sub is_column_hidden {
+    my $self = shift;
+    my $index = shift;                                    # index starts with 1
+
+    my $xpath =
+        $self->get_xpath() .
+        "//div[\@class='x-grid3-header']" . 
+        "//tr[\@class='x-grid3-hd-row']" .
+        "//td[$index]";
+#         "/td[contains(\@style, 'display: none')]";
+
+    # get style attribute and cancel if we could not get it
+    my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@style' );
+    return $FALSE
+        if not defined $attribute;
+
+    # check for hidden style
+    return 
+        ($attribute =~ m/display: none/)
+        ? $TRUE
+        : $FALSE;
+}
+
+
 1;  # Magic true value required at end of module
 __END__
 
