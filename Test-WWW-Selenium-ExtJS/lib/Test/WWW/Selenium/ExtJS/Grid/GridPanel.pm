@@ -230,29 +230,20 @@ sub open_column_header_menu {
     $self->extjs->selenium->click_ok( $xpath );
 
     # check that menu is open
-    my $xpath =
+    $xpath =
         $self->get_xpath() .
         "//div[\@class='x-grid3-header']" . 
         "//tr[\@class='x-grid3-hd-row']" .
         "//td[$index]";
     my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
-    like( $attribute, qr/x-grid3-hd-menu-open/, 'test if menu is open' );
+    like( 
+        $attribute, 
+        qr/x-grid3-hd-menu-open/, 
+        "header menu of column $index is open" 
+    );
 
-    # get id of menu
-# TODO
-
-
-#     # get class attribute and cancel if we could not get it
-#     my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
-#     return $FALSE
-#         if not defined $attribute;
-# 
-#     # check for hover class, which is added when a menu can be shown and 
-#     # the header is hovered
-#     return 
-#         ($attribute =~ m/x-grid3-hd-over/)
-#         ? $TRUE
-#         : $FALSE;
+    # return ext-id of menu
+    return $self->get_expression() . ".view.hmenu";
 }
 
 
