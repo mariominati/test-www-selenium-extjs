@@ -247,6 +247,28 @@ sub open_column_header_menu {
 }
 
 
+sub hide_column_header_menu {
+    my $self = shift;
+    my $index = shift;                                    # index starts with 1
+
+    # hide the column header menu via an ExtJS command
+    $self->get_eval( ".view.hmenu.hide();" );
+
+    # check that menu is not open
+    my $xpath =
+        $self->get_xpath() .
+        "//div[\@class='x-grid3-header']" . 
+        "//tr[\@class='x-grid3-hd-row']" .
+        "//td[$index]";
+    my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
+    unlike( 
+        $attribute, 
+        qr/x-grid3-hd-menu-open/, 
+        "header menu of column $index is not open" 
+    );
+}
+
+
 1;  # Magic true value required at end of module
 __END__
 
