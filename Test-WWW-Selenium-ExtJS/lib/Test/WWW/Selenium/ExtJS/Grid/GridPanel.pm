@@ -1,5 +1,7 @@
 package Test::WWW::Selenium::ExtJS::Grid::GridPanel;
 
+use Test::More;
+
 use Moose;                                       # Includes strict and warnings
 
 extends "Test::WWW::Selenium::ExtJS::Panel";
@@ -206,6 +208,51 @@ sub has_column_header_menu {
         ($attribute =~ m/x-grid3-hd-over/)
         ? $TRUE
         : $FALSE;
+}
+
+
+sub open_column_header_menu {
+    my $self = shift;
+    my $index = shift;                                    # index starts with 1
+
+    # column header menu must be present
+    return $FALSE
+        if not $self->has_column_header_menu( $index );
+
+    # click the column header menu button element
+    my $xpath =
+        $self->get_xpath() .
+        "//div[\@class='x-grid3-header']" . 
+        "//tr[\@class='x-grid3-hd-row']" .
+        "//td[$index]" .
+        "//a[\@class='x-grid3-hd-btn']";
+    $self->extjs->selenium->mouse_over_ok( $xpath );
+    $self->extjs->selenium->click_ok( $xpath );
+
+    # check that menu is open
+    my $xpath =
+        $self->get_xpath() .
+        "//div[\@class='x-grid3-header']" . 
+        "//tr[\@class='x-grid3-hd-row']" .
+        "//td[$index]";
+    my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
+    like( $attribute, qr/x-grid3-hd-menu-open/, 'test if menu is open' );
+
+    # get id of menu
+# TODO
+
+
+#     # get class attribute and cancel if we could not get it
+#     my $attribute = $self->extjs->selenium->get_attribute( $xpath.'/@class' );
+#     return $FALSE
+#         if not defined $attribute;
+# 
+#     # check for hover class, which is added when a menu can be shown and 
+#     # the header is hovered
+#     return 
+#         ($attribute =~ m/x-grid3-hd-over/)
+#         ? $TRUE
+#         : $FALSE;
 }
 
 
