@@ -68,6 +68,50 @@ sub count_menu_submenu_items {
 }
 
 
+# Hides the menu
+sub hide {
+    my $self = shift;
+
+    return $self->get_eval( ".hide();" );
+}
+
+
+sub mouseover_item {
+    my $self = shift;
+    my $item_text = shift;
+
+    my $xpath =
+        $self->get_xpath() .
+        "//ul[contains(\@class, 'x-menu-list')]" . 
+        "/li[contains(\@class, 'x-menu-list-item')]" .
+        "//span[contains(text(), '$item_text')]";
+
+
+    # Perform the mouseover on the item
+    $self->extjs->selenium->mouse_over_ok( $xpath );
+
+    return $self;
+}
+
+
+sub click_item {
+    my $self = shift;
+    my $item_text = shift;
+
+    my $xpath =
+        $self->get_xpath() .
+        "//ul[contains(\@class, 'x-menu-list')]" . 
+        "/li[contains(\@class, 'x-menu-list-item')]" .
+        "//span[contains(text(), '$item_text')]";
+
+    # Perform the click on the item
+    $self->extjs->selenium->click_ok( $xpath );
+
+    return $self;
+}
+#     $column_header_menu->click( 'Columns' )->click( 'id' );
+
+
 1;  # Magic true value required at end of module
 __END__
 
@@ -106,6 +150,10 @@ The XType of the Ext component, default is 'menu'.
 
 The methods of the base class are described at 
 L<Test::WWW::Selenium::ExtJS::Container>.
+
+=head3 C<hide>
+
+Hides the menu.
 
 =head2 Convenience methods to evaluate properties
 
