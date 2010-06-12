@@ -109,7 +109,43 @@ sub click_item {
 
     return $self;
 }
-#     $column_header_menu->click( 'Columns' )->click( 'id' );
+
+
+sub mouseover_click_item {
+    my $self = shift;
+    my $item_text = shift;
+
+    $self->mouseover_item( $item_text );
+    $self->click_item( $item_text );
+
+    return $self;
+}
+
+
+sub open_submenu {
+    my $self = shift;
+    my $menu_text = shift;
+
+    # Open (show) sub menu by mouse overing it
+    $self->mouseover_item( $menu_text );
+
+    # Get the id of the menu item object
+    my $xpath =
+        $self->get_xpath() .
+        "//ul[contains(\@class, 'x-menu-list')]" . 
+        "/li[contains(\@class, 'x-menu-list-item')]" .
+        "//span[contains(text(), '$menu_text')]" .
+        "/..";
+    my $id = $self->extjs->selenium->get_attribute( $xpath.'/@id' );
+
+    # Create a new menu object for the submenu
+    my $sub_menu = new Test::WWW::Selenium::ExtJS::Menu::Menu( 
+        extjs       => $self->extjs, 
+        expression  => "Ext.getCmp('" . $id . "').menu" 
+    );
+
+    return $sub_menu;
+}
 
 
 1;  # Magic true value required at end of module
