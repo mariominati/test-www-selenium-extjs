@@ -269,6 +269,32 @@ sub hide_column_header_menu {
 }
 
 
+sub set_checkbox_value {
+    my $self = shift;
+    my $row = shift;                                      # index starts with 1
+    my $column = shift;                                   # index starts with 1
+    my $value = shift;
+
+    # check, that we have a new value
+    my $old_value = $self->get_checkbox_value( $row, $column );
+    return 
+        if ($old_value == $value);
+
+    # change value by clicking
+    my $xpath =
+        $self->get_xpath() .
+        "//div[contains(\@class, 'x-grid3-scroller')]" . 
+        "//div[contains(\@class, 'x-grid3-row')][$row]" .
+        "//td[$column]" .
+        "//div[contains(\@class, 'x-grid3-cell-inner')]" .
+        "/div";
+    $self->extjs->selenium->mouse_down_ok( $xpath );
+    $self->extjs->selenium->mouse_up_ok( $xpath );
+
+    return $self;
+}
+
+
 1;  # Magic true value required at end of module
 __END__
 
