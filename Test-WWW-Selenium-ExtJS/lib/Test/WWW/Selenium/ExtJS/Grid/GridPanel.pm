@@ -2,6 +2,8 @@ package Test::WWW::Selenium::ExtJS::Grid::GridPanel;
 
 use Test::More;
 
+use Test::WWW::Selenium::ExtJS::Form::TextField;
+
 use Moose;                                       # Includes strict and warnings
 
 extends "Test::WWW::Selenium::ExtJS::Panel";
@@ -9,6 +11,7 @@ extends "Test::WWW::Selenium::ExtJS::Panel";
 use Readonly;
 Readonly my $TRUE       => 1;
 Readonly my $FALSE      => 0;
+Readonly my $ID_FUNCTION    => ".getId()";
 
 
 # xtype - set the default xtype of this Ext component
@@ -266,6 +269,39 @@ sub hide_column_header_menu {
         qr/x-grid3-hd-menu-open/, 
         "header menu of column $index is not open" 
     );
+}
+
+
+sub set_value {
+    my $self = shift;
+    my $row = shift;                                      # index starts with 1
+    my $column = shift;                                   # index starts with 1
+    my $value = shift;
+
+    # check, that we have a new value
+    my $old_value = $self->get_value( $row, $column );
+    return warn
+        if ($old_value eq $value);
+
+    # open editor by clicking
+    my $xpath =
+        $self->get_xpath() .
+        "//div[contains(\@class, 'x-grid3-scroller')]" . 
+        "//div[contains(\@class, 'x-grid3-row')][$row]" .
+        "//td[$column]" .
+        "//div[contains(\@class, 'x-grid3-cell-inner')]";
+    $self->extjs->selenium->click_at_ok( $xpath, "0,0" );
+
+    # get editor
+    my $editor = new Test::WWW::Selenium::ExtJS::Form::TextField(
+        extjs       => $self->extjs, 
+        expression  => $self->get_expression() . ".colModel.config[" . ($column-1) . "].editor"
+    );
+
+    # set value and blur
+    $editor->type_value( $value )->blur();
+
+    return $self;
 }
 
 
