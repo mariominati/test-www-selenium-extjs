@@ -11,7 +11,6 @@ extends "Test::WWW::Selenium::ExtJS::Panel";
 use Readonly;
 Readonly my $TRUE       => 1;
 Readonly my $FALSE      => 0;
-Readonly my $ID_FUNCTION    => ".getId()";
 
 
 # xtype - set the default xtype of this Ext component
