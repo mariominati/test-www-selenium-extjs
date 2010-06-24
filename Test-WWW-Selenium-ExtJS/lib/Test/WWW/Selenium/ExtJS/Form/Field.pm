@@ -26,17 +26,20 @@ has '+xtype' => (
 sub BUILD {
     my ( $self, $params ) = @_;
 
-    die "Missing parameter 'name'." 
-        unless $self->has_name;
+    # find form element by name
+    if ($self->has_name) {
 
-    # Set expression to find first field with given name
-    $self->expression(
-        ".findBy( function (component) {" .
-        " return (component.isXType && component.isXType('" . 
-            $self->xtype . "'))" .
-        " && (component.name && component.name == '" . $self->name . "')" .
-        " })[0]"
-    );
+        # Set expression to find first field with given name
+        $self->expression(
+            ".findBy( function (component) {" .
+            " return (component.isXType && component.isXType('" . 
+                $self->xtype . "'))" .
+            " && (component.name && component.name == '" . $self->name . "')" .
+            " })[0]"
+        );
+    }
+
+    # otherwise we just use the given expression
 }
 
 
