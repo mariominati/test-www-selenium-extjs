@@ -291,6 +291,18 @@ sub wait_until_mask_shows {
 }
 
 
+# Returns true after showing and disappearing mask
+sub wait_until_mask_shows_and_disappears {
+    my $self = shift;
+    my ($mask, $timeout) = @_;
+
+    $self->wait_until_mask_shows( $mask, $timeout );
+    $self->wait_until_mask_disappears( $mask, $timeout );
+
+    return;
+}
+
+
 ### Private methods
 
 # Build javascript preserve window objects string
