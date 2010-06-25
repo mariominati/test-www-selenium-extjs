@@ -521,6 +521,10 @@ Returns true if currently a load mask is being displayed .
 
 Returns true as soon as the mask disappears, else timeout exception.
 
+=head3 C<wait_until_mask_shows>
+
+Returns true as soon as the mask shows, else timeout exception.
+
 
 =head1 DIAGNOSTICS
 
@@ -541,6 +545,11 @@ attribute.
 =item C<< Timed out waiting for mask to disappear. >>
 
 This error happens when the mask does not disappear in the given period of time. 
+You can try to increase the value of the L<timeout> attribute.
+
+=item C<< Timed out waiting for mask to show. >>
+
+This error happens when the mask does not show in the given period of time. 
 You can try to increase the value of the L<timeout> attribute.
 
 =back
