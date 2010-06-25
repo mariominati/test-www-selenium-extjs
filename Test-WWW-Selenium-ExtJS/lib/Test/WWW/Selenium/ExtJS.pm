@@ -291,7 +291,7 @@ sub wait_until_mask_shows {
 }
 
 
-# Returns true after showing and disappearing mask
+# Returns after showing and disappearing mask
 sub wait_until_mask_shows_and_disappears {
     my $self = shift;
     my ($mask, $timeout) = @_;
@@ -536,6 +536,10 @@ Returns true as soon as the mask disappears, else timeout exception.
 =head3 C<wait_until_mask_shows>
 
 Returns true as soon as the mask shows, else timeout exception.
+
+=head3 C<wait_until_mask_shows_and_disappears>
+
+Returns after showing and disappearing mask.
 
 
 =head1 DIAGNOSTICS
