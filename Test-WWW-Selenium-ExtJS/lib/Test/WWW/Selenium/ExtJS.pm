@@ -255,7 +255,6 @@ sub wait_until_mask_disappears {
 
         # Run expression and check result
         my $result = $self->has_mask( $mask );
-warn $result;
 
         return 
             if ($result eq '0');
@@ -494,6 +493,10 @@ Returns true as soon as expression fails to resolve, else dies on timeout.
 
 Returns true if currently a load mask is being displayed .
 
+=head3 C<wait_until_mask_disappears>
+
+Returns true as soon as the mask disappears, else timeout exception.
+
 
 =head1 DIAGNOSTICS
 
@@ -510,6 +513,11 @@ of the L<timeout> attribute.
 This error happens when the given expression does not stop to resolve in the 
 given period of time. You can try to increase the value of the L<timeout> 
 attribute.
+
+=item C<< Timed out waiting for mask to disappear. >>
+
+This error happens when the mask does not disappear in the given period of time. 
+You can try to increase the value of the L<timeout> attribute.
 
 =back
 
