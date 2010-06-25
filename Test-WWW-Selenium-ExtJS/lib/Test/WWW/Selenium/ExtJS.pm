@@ -267,6 +267,30 @@ sub wait_until_mask_disappears {
 }
 
 
+# Returns true as soon as the mask shows, else timeout exception
+sub wait_until_mask_shows {
+    my $self = shift;
+    my ($mask, $timeout) = @_;
+
+    $timeout ||= $self->timeout;                   # Fall back on default value
+
+    # Initiate timeout loop
+    for (1 .. $timeout / $self->looptime) {
+
+        # Run expression and check result
+        my $result = $self->has_mask( $mask );
+
+        return 
+            if ($result eq '1');
+
+        # Wait before next check
+        sleep ($self->looptime / 1000);
+    }
+
+    die "Timed out waiting for mask to show.";
+}
+
+
 ### Private methods
 
 # Build javascript preserve window objects string
