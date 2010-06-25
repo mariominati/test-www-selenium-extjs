@@ -465,6 +465,10 @@ included in the custom expression.
 
 Returns true as soon as expression fails to resolve, else dies on timeout.
 
+=head3 C<has_mask>
+
+Returns true if currently a load mask is being displayed .
+
 
 =head1 DIAGNOSTICS
 
