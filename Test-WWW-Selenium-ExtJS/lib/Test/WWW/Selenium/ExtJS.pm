@@ -230,6 +230,19 @@ die $result;
 }
 
 
+# Checks if a mask is being shown
+sub has_mask {
+    my $self = shift;
+    my $mask = shift || 'x-mask-loading';
+
+
+    my $mask_xpath =
+        "//*[contains(\@class, '" . $mask . "')]";
+
+    return $self->selenium->is_element_present( $mask_xpath );
+}
+
+
 ### Private methods
 
 # Build javascript preserve window objects string
