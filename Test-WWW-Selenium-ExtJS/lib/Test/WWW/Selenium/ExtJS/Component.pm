@@ -85,7 +85,7 @@ sub wait_for_extjs_id_from_html_id {
         "var component_id;
         if ( this && Ext && Ext.ComponentMgr ) {
             Ext.ComponentMgr.all.each( function(item,index,length) {     
-                if ( item.el.id == '" . $self->html_id . "') {
+                if ( item.el && item.el.id == '" . $self->html_id . "') {
                     component_id = item.getId();
                     return false;     
                 } 
