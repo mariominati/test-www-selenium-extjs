@@ -65,10 +65,13 @@ sub BUILD {
 sub get_html_id {
     my $self = shift;
 
-    return $self->html_id
-        if $self->has_html_id;
+    if (not $self->has_html_id) {
+        $self->html_id( 
+            $self->extjs->get_eval( $self->get_expression() . $ID_FUNCTION )
+        );
+    }
 
-    return $self->extjs->get_eval( $self->get_expression() . $ID_FUNCTION );
+    return $self->html_id;
 }
 
 
